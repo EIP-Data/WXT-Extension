@@ -1,16 +1,19 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import {useI18n} from "vue-i18n";
 
 defineProps({
   msg: String,
 });
+
+const { t } = useI18n();
 
 const count = ref(0);
 </script>
 
 <template>
   <h1>{{ msg }}</h1>
-
+  <h2>{{ t('some-key') }}</h2>
   <div class="card">
     <button type="button" @click="count++">count is {{ count }}</button>
     <p>
