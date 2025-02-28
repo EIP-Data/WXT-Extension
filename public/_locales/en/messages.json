@@ -1,8 +1,8 @@
 {
   "extName" : {
-    "message" : "My Extension"
+    "message" : "Datalyz"
   },
   "extDescription": {
-    "message": "This is a description of my extension."
+    "message": "DataLyz is a browser extension that helps you to analyze data on the web."
   }
 }
