@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
+import api from "@/utils/api";
 
 const { t } = useI18n()
 
@@ -12,11 +13,15 @@ const errorMessage = ref('')
 
 const handleSubmit = async () => {
   try {
-    // Add your login logic here
-    console.log('Logging in with:', email.value, password.value)
-    errorMessage.value = ''
+    const response = await api.post('/login', {
+      email: email.value,
+      password: password.value
+    });
+
+    localStorage.setItem('authToken', response.data.jwt);
+    errorMessage.value = '';
   } catch (err) {
-    errorMessage.value = t('login.error')
+    errorMessage.value = t('login.error');
   }
 }
 

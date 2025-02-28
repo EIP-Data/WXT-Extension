@@ -6,6 +6,9 @@ export default defineConfig({
   extensionApi: 'chrome',
   modules: ['@wxt-dev/module-vue'],
   vite: () => ({
+    define: {
+      'import.meta.env.VITE_API_ENDPOINT': JSON.stringify(process.env.VITE_API_ENDPOINT)
+    },
     plugins: [
       // See https://vue-i18n.intlify.dev/guide/advanced/optimization.html
       vueI18n({
@@ -17,6 +20,8 @@ export default defineConfig({
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
     default_locale: 'en',
+    permissions: ["storage"],
+    host_permissions: ["<all_urls>"]
   },
   css: {
     postcss: {
