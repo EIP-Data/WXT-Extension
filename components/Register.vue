@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { ref, computed } from 'vue'
+import api from "@/utils/api";
 
 const { t } = useI18n()
 
-const firstName = ref('')
-const lastName = ref('')
+const username = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
@@ -25,15 +25,17 @@ const handleSubmit = async () => {
       return
     }
 
-    // Add your registration logic here
-    console.log('Registering:', {
-      firstName: firstName.value,
-      lastName: lastName.value,
-      email: email.value
-    })
-    errorMessage.value = ''
+    const response = await api.post('/register', {
+      username: username.value,
+      email: email.value,
+      password: password.value
+    });
+
+    localStorage.setItem('authToken', response.data.jwt);
+    errorMessage.value = '';
   } catch (err) {
     errorMessage.value = t('register.error')
+    console.error(err)
   }
 }
 
@@ -68,32 +70,17 @@ const passwordStrength = computed(() => {
         </div>
 
         <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ t('register.firstName') }}
-              </label>
-              <input
-                  v-model="firstName"
-                  type="text"
-                  required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  :placeholder="t('register.firstNamePlaceholder')"
-              >
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ t('register.lastName') }}
-              </label>
-              <input
-                  v-model="lastName"
-                  type="text"
-                  required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  :placeholder="t('register.lastNamePlaceholder')"
-              >
-            </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              {{ t('register.username') }}
+            </label>
+            <input
+                v-model="username"
+                type="text"
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                :placeholder="t('register.usernamePlaceholder')"
+            >
           </div>
 
           <div>
