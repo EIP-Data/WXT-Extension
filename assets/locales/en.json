@@ -10,7 +10,9 @@
     "forgotPassword": "Forgot password?",
     "submit": "Sign In",
     "error": "Invalid credentials. Please try again.",
-    "logoAlt": "Application Logo"
+    "logoAlt": "Application Logo",
+    "register": "Don't have an account?",
+    "registerInstead": "Create one now"
   },
   "register": {
     "title": "Create Account",

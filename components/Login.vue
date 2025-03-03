@@ -38,7 +38,7 @@ const passwordStrength = computed(() => {
     <div class="w-full max-w-md space-y-8">
       <div class="text-center">
         <img
-            src="@/assets/logo.svg"
+            src="@/assets/logo.webp"
             class="h-16 mx-auto mb-4"
             :alt="t('login.logoAlt')"
         >
@@ -132,6 +132,12 @@ const passwordStrength = computed(() => {
         >
           {{ t('login.submit') }}
         </button>
+        <p class="text-center text-sm text-gray-600">
+          {{ t('login.register') }}
+          <a href="#" class="text-blue-600 hover:text-blue-500">
+            {{ t('login.registerInstead') }}
+          </a>
+        </p>
       </form>
     </div>
   </div>

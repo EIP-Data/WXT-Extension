@@ -10,7 +10,9 @@
     "forgotPassword": "Mot de passe oublié ?",
     "submit": "Se connecter",
     "error": "Identifiants incorrects. Veuillez réessayer.",
-    "logoAlt": "Logo de l'application"
+    "logoAlt": "Logo de l'application",
+    "register": "Vous n'avez pas de compte ?",
+    "registerInstead": "Créez-en un maintenant"
   },
   "register" : {
     "title": "Créer un compte",
