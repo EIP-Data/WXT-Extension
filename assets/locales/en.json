@@ -1,4 +1,16 @@
 {
+  "menu": {
+    "home": "Home",
+    "preferences": "Preferences",
+    "language": "Language",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "home": {
+    "welcome": "Welcome to Datalyz"
+  },
   "login" : {
     "title": "Sign In",
     "subtitle": "Sign in to continue to your account",
@@ -12,7 +24,8 @@
     "error": "Invalid credentials. Please try again.",
     "logoAlt": "Application Logo",
     "register": "Don't have an account?",
-    "registerInstead": "Create one now"
+    "registerInstead": "Create one now",
+    "successMessage" : "Successfully connected"
   },
   "register": {
     "title": "Create Account",
@@ -32,5 +45,8 @@
     "existingAccount": "Already have an account?",
     "loginInstead": "Log in instead",
     "submit": "Create Account"
+  },
+  "logout": {
+    "SuccessMessage": "You have been logged out successfully"
   }
 }

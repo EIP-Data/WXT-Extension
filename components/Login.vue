@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toast-notification'
 import { ref } from 'vue'
 import api from "@/utils/api";
 
 const { t } = useI18n()
-
+const router = useRouter()
+const toast = useToast()
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
@@ -19,10 +22,12 @@ const handleSubmit = async () => {
     });
 
     localStorage.setItem('authToken', response.data.jwt);
-    errorMessage.value = '';
-  } catch (err) {
-    errorMessage.value = t('login.error');
-  }
+    toast.success(t('login.successMessage'));
+    await router.replace({ name: 'Home' });
+  } catch (error) {
+    toast.error(t('login.error'));
+    await router.push({ name: 'Login' });
+  };
 }
 
 const passwordStrength = computed(() => {
