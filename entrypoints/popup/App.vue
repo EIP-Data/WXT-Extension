@@ -11,7 +11,6 @@ const route = useRoute()
 const showSettings = ref(false)
 const selectedMenuItem = ref('')
 const isAuthenticated = computed(() => !localStorage.getItem('authToken'))
-const darkMode = ref(localStorage.getItem('darkMode') === 'true')
 
 const menuItems = computed(() => [
   { id: 'home', label: t('menu.home'), route: '/', requiresAuth: true },
@@ -23,23 +22,12 @@ const menuItems = computed(() => [
     action: () => isAuthenticated.value ? logout() : router.push('/login'),
     requiresAuth: false
   },
-  {
-    id: 'theme',
-    label: darkMode.value ? 'Light Mode' : 'Dark Mode',
-    action: toggleDarkMode,
-    icon: darkMode.value ? SunIcon : MoonIcon
-  }
 ].filter(item => !item.requiresAuth || isAuthenticated.value))
 
 const switchLanguage = (lang: 'en' | 'fr') => {
   locale.value = lang
   localStorage.setItem('user-lang', lang)
   selectedMenuItem.value = ''
-}
-
-const toggleDarkMode = () => {
-  darkMode.value = !darkMode.value
-  localStorage.setItem('darkMode', darkMode.value.toString())
 }
 
 const login = (token: string) => {
@@ -74,78 +62,80 @@ const handleMenuAction = (itemId: string) => {
   }
 }
 
-watchEffect(() => {
+onMounted(() => {
   if (!isAuthenticated.value && route.meta.requiresAuth) {
     router.replace('/login')
-  }
-  if (darkMode.value) {
-    document.documentElement.classList.add('dark')
-  } else {
-    document.documentElement.classList.remove('dark')
   }
 })
 </script>
 
 <template>
-  <div :class="{ 'dark': darkMode }">
-    <div class="w-[400px] min-h-[400px] p-4 bg-gradient-to-br from-blue-50 to-indigo-100 relative">
-      <div v-if="isAuthenticated" class="flex justify-end p-2">
-        <button
-            @click="showSettings = !showSettings"
-            class="p-2 hover:bg-gray-200 rounded-full transition-colors"
-        >
-          <Cog6ToothIcon class="w-6 h-6 text-gray-600" />
-        </button>
-      </div>
-
-      <transition name="slide">
-        <div
-            v-if="showSettings && isAuthenticated"
-            class="absolute right-4 top-16 w-64 bg-white rounded-lg shadow-xl border border-gray-100"
-        >
-          <div class="p-4 space-y-2">
-            <template v-for="item in menuItems" :key="item.id">
-              <div
-                  v-if="item.id !== 'auth' || !isAuthenticated"
-                  @click="handleMenuAction(item.id)"
-                  class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
-                  :class="{ 'bg-gray-50': route.path === item.route }"
-              >
-                <span>{{ item.label }}</span>
-                <ChevronDownIcon
-                    v-if="item.submenu"
-                    class="w-4 h-4 transform transition-transform"
-                    :class="{ 'rotate-180': selectedMenuItem === item.id }"
-                />
-              </div>
-
-              <transition name="fade">
-                <div
-                    v-if="selectedMenuItem === 'language' && item.id === 'language'"
-                    class="ml-4 space-y-2"
-                >
-                  <div
-                      v-for="lang in item.submenu"
-                      :key="lang"
-                      @click="switchLanguage(lang)"
-                      class="p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
-                      :class="{ 'bg-blue-50': locale === lang }"
-                  >
-                    {{ lang.toUpperCase() }}
-                  </div>
-                </div>
-              </transition>
-            </template>
-          </div>
-        </div>
-      </transition>
-
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
+  <div class="w-[400px] min-h-[400px] p-4
+           bg-gradient-to-br from-blue-50 to-indigo-100
+           dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-900
+           relative transition-colors duration-200">
+  <div v-if="isAuthenticated" class="flex justify-end p-2">
+      <button
+          @click="showSettings = !showSettings"
+          class="p-2 hover:bg-gray-200 dark:hover:bg-gray-700/50
+             rounded-full transition-colors duration-200"
+      >
+        <Cog6ToothIcon class="w-6 h-6 text-gray-600 dark:text-gray-300"/>
+      </button>
     </div>
+
+    <transition name="slide">
+      <div
+          v-if="showSettings && isAuthenticated"
+          class="absolute right-4 top-16 w-64
+           bg-white dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-900
+           border border-gray-100 dark:border-gray-700
+           rounded-lg shadow-xl backdrop-blur-sm"
+      >
+        <div class="p-4 space-y-2">
+          <template v-for="item in menuItems" :key="item.id">
+            <div
+                v-if="item.id !== 'auth' || !isAuthenticated"
+                @click="handleMenuAction(item.id)"
+                class="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors"
+                :class="{ 'bg-gray-50 dark:hover:bg-gray-700': route.path === item.route }"
+            >
+              <span>{{ item.label }}</span>
+              <ChevronDownIcon
+                  v-if="item.submenu"
+                  class="w-4 h-4 transform transition-transform"
+                  :class="{ 'rotate-180': selectedMenuItem === item.id }"
+              />
+            </div>
+
+            <transition name="fade">
+              <div
+                  v-if="selectedMenuItem === 'language' && item.id === 'language'"
+                  class="ml-4 space-y-2"
+              >
+                <div
+                    v-for="lang in item.submenu"
+                    :key="lang"
+                    @click="switchLanguage(lang)"
+                    class="p-2 hover:bg-gray-50 dark:hover:bg-gray-700/60
+                   rounded-lg cursor-pointer transition-colors
+                   bg-blue-50 dark:bg-gray-700/30"
+                    :class="{ 'bg-blue-50 dark:bg-gray-500': locale === lang }"
+                >
+                  {{ lang.toUpperCase() }}
+                </div>
+              </div>
+            </transition>
+          </template>
+        </div>
+      </div>
+    </transition>
+
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
