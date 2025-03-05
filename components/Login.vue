@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import api from "@/utils/api";
+import { useRouter, useRoute } from 'vue-router'
+const route = useRoute()
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
 
 const { t } = useI18n()
 const router = useRouter()
@@ -21,13 +25,12 @@ const handleSubmit = async () => {
       password: password.value
     });
 
-    localStorage.setItem('authToken', response.data.jwt);
+    auth.login(response.data.jwt);
     toast.success(t('login.successMessage'));
-    await router.replace({ name: 'Home' });
   } catch (error) {
     toast.error(t('login.error'));
     await router.push({ name: 'Login' });
-  };
+  }
 }
 
 const passwordStrength = computed(() => {
@@ -39,7 +42,7 @@ const passwordStrength = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center min-h-[calc(100vh-96px)] p-4">
+  <div class="flex items-center justify-center min-h-[calc(100vh-96px)] p-4 transition-colors duration-300">
     <div class="w-full max-w-md space-y-8">
       <div class="text-center">
         <img
@@ -47,22 +50,22 @@ const passwordStrength = computed(() => {
             class="h-16 mx-auto mb-4"
             :alt="t('login.logoAlt')"
         >
-        <h1 class="text-3xl font-bold text-gray-900">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
           {{ t('login.title') }}
         </h1>
-        <p class="mt-2 text-gray-600">
+        <p class="mt-2 text-gray-600 dark:text-gray-300">
           {{ t('login.subtitle') }}
         </p>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="mt-8 space-y-6 bg-white p-8 rounded-2xl shadow-xl">
-        <div v-if="errorMessage" class="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+      <form @submit.prevent="handleSubmit" class="mt-8 space-y-6 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl transition-colors duration-300">
+        <div v-if="errorMessage" class="p-4 text-sm text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900 rounded-lg">
           {{ errorMessage }}
         </div>
 
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {{ t('login.email') }}
             </label>
             <div class="relative">
@@ -70,10 +73,10 @@ const passwordStrength = computed(() => {
                   v-model="email"
                   type="email"
                   required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orangePrimary focus:border-orangePrimary dark:bg-gray-700 dark:text-white transition-colors duration-300"
                   :placeholder="t('login.emailPlaceholder')"
               >
-              <span class="absolute right-3 top-3.5 text-gray-400">
+              <span class="absolute right-3 top-3.5 text-gray-400 dark:text-gray-400">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
@@ -83,7 +86,7 @@ const passwordStrength = computed(() => {
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {{ t('login.password') }}
             </label>
             <div class="relative">
@@ -91,13 +94,13 @@ const passwordStrength = computed(() => {
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orangePrimary focus:border-orangePrimary dark:bg-gray-700 dark:text-white transition-colors duration-300"
                   :placeholder="t('login.passwordPlaceholder')"
               >
               <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute right-3 top-3.5 text-gray-400 hover:text-blue-500"
+                  class="absolute right-3 top-3.5 text-gray-400 hover:text-orangePrimary dark:hover:text-orangePrimary-dark transition-colors duration-300"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path v-if="showPassword" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -110,22 +113,26 @@ const passwordStrength = computed(() => {
               <div
                   v-for="n in 3"
                   :key="n"
-                  class="h-1 flex-1 rounded-full transition-colors"
-                  :class="passwordStrength >= n ? 'bg-blue-500' : 'bg-gray-200'"
+                  class="h-1 flex-1 rounded-full transition-colors duration-300"
+                  :class="[
+                    passwordStrength >= n
+                      ? 'bg-orangePrimary dark:bg-orangePrimary-dark'
+                      : 'bg-gray-200 dark:bg-gray-600'
+                  ]"
               ></div>
             </div>
           </div>
 
           <div class="flex items-center justify-between">
-            <label class="flex items-center text-sm text-gray-600">
+            <label class="flex items-center text-sm text-gray-600 dark:text-gray-400">
               <input
                   v-model="rememberMe"
                   type="checkbox"
-                  class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                  class="w-4 h-4 text-orangePrimary/80 border-gray-300 rounded focus:ring-orangePrimary dark:bg-gray-700 dark:border-gray-600"
               >
               <span class="ml-2">{{ t('login.rememberMe') }}</span>
             </label>
-            <a href="#" class="text-sm text-blue-600 hover:text-blue-500">
+            <a href="#" class="text-sm text-orangePrimary hover:text-orangePrimary/80 dark:text-orangePrimary-dark dark:hover:text-orangePrimary-dark/80 transition-colors duration-300">
               {{ t('login.forgotPassword') }}
             </a>
           </div>
@@ -133,13 +140,13 @@ const passwordStrength = computed(() => {
 
         <button
             type="submit"
-            class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orangePrimary hover:bg-orangePrimary/80 dark:bg-orangePrimary-dark dark:hover:bg-orangePrimary-dark/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orangePrimary transition-colors duration-300"
         >
           {{ t('login.submit') }}
         </button>
-        <p class="text-center text-sm text-gray-600">
+        <p class="text-center text-sm text-gray-600 dark:text-gray-400">
           {{ t('login.register') }}
-          <a href="#" class="text-blue-600 hover:text-blue-500">
+          <a href="#" class="text-orangePrimary hover:text-orangePrimary/80 dark:text-orangePrimary-dark dark:hover:text-orangePrimary-dark/80 transition-colors duration-300">
             {{ t('login.registerInstead') }}
           </a>
         </p>

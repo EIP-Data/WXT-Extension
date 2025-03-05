@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import './style.css';
 import App from './App.vue';
+import { createPinia } from 'pinia'
 import i18n from "@/utils/i18n";
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Toast from 'vue-toast-notification'
@@ -15,7 +16,9 @@ const router = createRouter({
         {
             path: '/',
             name: 'Home',
-            component: Home
+            component: Home,
+            meta: { requiresAuth: true },
+            alias: '/home'
         },
         {
             path: '/login',
@@ -39,12 +42,16 @@ router.beforeEach((to, from, next) => {
             path: '/login',
             query: { redirect: to.fullPath }
         })
+    } else if (to.name === 'Login' && isAuthenticated) {
+        next('/')
     } else {
         next()
     }
 })
 
+
 const app = createApp(App)
+app.use(createPinia())
 app.use(router)
 app.use(Toast, {
     transition: 'Vue-Toastification__bounce',

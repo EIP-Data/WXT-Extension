@@ -9,7 +9,15 @@
     "login": "Login"
   },
   "home": {
-    "welcome": "Welcome to Datalyz"
+    "welcome": "Welcome",
+    "user": "User",
+    "subtitle": "Your browsing protection summary",
+    "cookies_blocked": "Cookies Blocked",
+    "trackers_stopped": "Trackers Stopped",
+    "ads_prevented": "Ads Prevented",
+    "activity_today": "Today's Activity",
+    "quick_scan": "Quick Scan",
+    "settings": "Settings"
   },
   "login" : {
     "title": "Sign In",

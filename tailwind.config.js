@@ -7,7 +7,14 @@ export default {
     "./utils/**/*.js",
   ],
   theme: {
-    extend: {},
+    extend: {
+        colors: {
+            orangePrimary: {
+                DEFAULT: "#F9AB3B",
+                dark: "#E1A148FF"
+            },
+        },
+    },
   },
   plugins: [],
 }
