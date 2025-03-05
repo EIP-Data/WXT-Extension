@@ -25,11 +25,18 @@ export default defineConfig({
       "activeTab",
       "storage",
     ],
-    host_permissions: ["<all_urls>"]
+    host_permissions: ["<all_urls>",
+        '*://localhost/*' ],
   },
   css: {
     postcss: {
       plugins: [require('tailwindcss'), require('autoprefixer')]
     }
-  }
+  },
+  web_accessible_resources: [
+    {
+      resources: ['popup.html'],
+      matches: ['<all_urls>']
+    }
+  ]
 });
