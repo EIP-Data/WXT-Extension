@@ -35,24 +35,17 @@
     "registerInstead": "Create one now",
     "successMessage" : "Successfully connected"
   },
-  "register": {
-    "title": "Create Account",
-    "subtitle": "Start your journey with us",
-    "username": "Username",
-    "usernamePlaceholder": "DarkVador",
-    "emailPlaceholder": "your{'@'}email.com",
-    "passwordPlaceholder": "Enter your password",
-    "email": "Email Address",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "confirmPasswordPlaceholder": "••••••••",
-    "agreeToTerms": "I agree to the",
-    "termsOfService": "Terms of Service",
-    "passwordMismatch": "Passwords do not match",
-    "termsRequired": "You must agree to the terms",
-    "existingAccount": "Already have an account?",
-    "loginInstead": "Log in instead",
-    "submit": "Create Account"
+  "preference": {
+    "title": "Preferences",
+    "cookieLabel": "Enable Cookies",
+    "languageLabel": "Language",
+    "expirationLabel": "Data Expiration (Months)",
+    "expirationHelp": "Data will be deleted after {months} months",
+    "saveButton": "Save Changes",
+    "loadSuccess": "Preferences loaded successfully",
+    "loadError": "Failed to load preferences",
+    "saveSuccess": "Preferences saved successfully",
+    "updateError": "Error updating preferences"
   },
   "logout": {
     "SuccessMessage": "You have been logged out successfully"

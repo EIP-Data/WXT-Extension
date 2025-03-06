@@ -33,7 +33,7 @@ onMounted(() => {
   <div class="min-h-[400px] p-6 space-y-8 bg-gray-50 dark:bg-gray-900">
     <!-- Header Section -->
     <div class="space-y-2">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-orangePrimary">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-50">
         {{ t("home.welcome") }}, <span class="text-orangePrimary dark:text-orangePrimary-dark">{{ user || t("home.user") }}</span>
       </h1>
       <p class="text-gray-600 dark:text-gray-300">
@@ -99,8 +99,6 @@ onMounted(() => {
         </h2>
         <PresentationChartBarIcon class="w-6 h-6 text-orangePrimary dark:text-orangePrimary-dark" />
       </div>
-
-      <!-- Simple Chart (Replace with actual chart library) -->
       <div class="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse">
         <!-- Add your chart implementation here -->
       </div>

@@ -9,6 +9,7 @@ import Home from '@/components/Home.vue';
 import Login from '@/components/Login.vue';
 import Preferences from '@/components/Preferences.vue';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
+import {useAuthStore} from "@/stores/auth";
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -32,7 +33,18 @@ const router = createRouter({
             component: Preferences,
             meta: { requiresAuth: true }
         }
-    ]
+    ],
+    scrollBehavior(to, from) {
+        return new Promise((resolve) => {
+            requestAnimationFrame(() => {
+                const container = document.getElementById('scroll-container')
+                if (container) {
+                    container.scrollTop = 0
+                }
+                resolve(false)
+            })
+        })
+    }
 });
 
 router.beforeEach((to, from, next) => {
@@ -55,8 +67,10 @@ app.use(createPinia())
 app.use(router)
 app.use(Toast, {
     transition: 'Vue-Toastification__bounce',
-    maxToasts: 3,
+    maxToasts: 2,
     newestOnTop: true
 });
 app.use(i18n);
+const auth = useAuthStore()
+auth.initLanguage()
 app.mount('#app');
