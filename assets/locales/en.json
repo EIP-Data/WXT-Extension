@@ -1,0 +1,53 @@
+{
+  "menu": {
+    "home": "Home",
+    "preferences": "Preferences",
+    "language": "Language",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "home": {
+    "welcome": "Welcome",
+    "user": "User",
+    "subtitle": "Your browsing protection summary",
+    "cookies_blocked": "Cookies Blocked",
+    "trackers_stopped": "Trackers Stopped",
+    "ads_prevented": "Ads Prevented",
+    "activity_today": "Today's Activity",
+    "quick_scan": "Quick Scan",
+    "settings": "Settings"
+  },
+  "login" : {
+    "title": "Sign In",
+    "subtitle": "Sign in to continue to your account",
+    "email": "Email Address",
+    "emailPlaceholder": "your{'@'}email.com",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "submit": "Sign In",
+    "error": "Invalid credentials. Please try again.",
+    "logoAlt": "Application Logo",
+    "register": "Don't have an account?",
+    "registerInstead": "Create one now",
+    "successMessage" : "Successfully connected"
+  },
+  "preference": {
+    "title": "Preferences",
+    "cookieLabel": "Enable Cookies",
+    "languageLabel": "Language",
+    "expirationLabel": "Data Expiration (Months)",
+    "expirationHelp": "Data will be deleted after {months} months",
+    "saveButton": "Save Changes",
+    "loadSuccess": "Preferences loaded successfully",
+    "loadError": "Failed to load preferences",
+    "saveSuccess": "Preferences saved successfully",
+    "updateError": "Error updating preferences"
+  },
+  "logout": {
+    "SuccessMessage": "You have been logged out successfully"
+  }
+}

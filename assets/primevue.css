@@ -1,0 +1,19 @@
+@import 'primevue/resources/primevue.min.css';
+@import 'primeicons/primeicons.css';
+
+/* Custom theme overrides */
+.p-dropdown {
+    @apply border-2 rounded-xl dark:border-gray-600;
+}
+
+.p-dropdown .p-dropdown-label {
+    @apply py-3 px-4 bg-white dark:bg-gray-700 dark:text-white;
+}
+
+.p-dropdown-panel {
+    @apply bg-white dark:bg-gray-800 border-2 dark:border-gray-700 rounded-xl;
+}
+
+.p-dropdown-item {
+    @apply p-2 hover:bg-orangePrimary/10 dark:hover:bg-gray-700 transition-colors;
+}

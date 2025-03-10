@@ -1,0 +1,53 @@
+{
+  "menu": {
+    "home": "Accueil",
+    "preferences": "Préférences",
+    "language": "Langue",
+    "dark_mode": "Mode Sombre",
+    "light_mode": "Mode Clair",
+    "logout": "Déconnexion",
+    "login": "Connexion"
+  },
+  "home": {
+    "welcome": "Bienvenue",
+    "user": "Utilisateur",
+    "subtitle": "Résumé de votre protection de navigation",
+    "cookies_blocked": "Cookies Bloqués",
+    "trackers_stopped": "Traqueurs Arrêtés",
+    "ads_prevented": "Publicités Bloquées",
+    "activity_today": "Activité du Jour",
+    "quick_scan": "Analyse Rapide",
+    "settings": "Paramètres"
+  },
+  "login": {
+    "title": "Connexion",
+    "subtitle": "Connectez-vous pour accéder à votre compte",
+    "email": "Adresse Email",
+    "emailPlaceholder": "votre{'@'}email.com",
+    "password": "Mot de Passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié ?",
+    "submit": "Se Connecter",
+    "error": "Identifiants invalides. Veuillez réessayer.",
+    "logoAlt": "Logo de l'application",
+    "register": "Vous n'avez pas de compte ?",
+    "registerInstead": "Créez-en un maintenant",
+    "successMessage": "Connecté avec succès"
+  },
+  "preference": {
+    "title": "Préférences",
+    "cookieLabel": "Activer les Cookies",
+    "languageLabel": "Langue",
+    "expirationLabel": "Expiration des Données (Mois)",
+    "expirationHelp": "Les données seront supprimées après {months} mois",
+    "saveButton": "Enregistrer les Modifications",
+    "loadSuccess": "Préférences chargées avec succès",
+    "loadError": "Échec du chargement des préférences",
+    "saveSuccess": "Préférences enregistrées avec succès",
+    "updateError": "Erreur lors de la mise à jour des préférences"
+  },
+  "logout": {
+    "SuccessMessage": "Vous avez été déconnecté avec succès"
+  }
+}
