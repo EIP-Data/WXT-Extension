@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'media', // or 'media' or 'class'
+  darkMode: 'media',
   content: [
     "./entrypoints/**/*.{vue,js,ts,jsx,tsx}",
     "./components/**/*.{vue,js,ts,jsx,tsx}",
@@ -16,6 +16,5 @@ export default {
         },
     },
   },
-  plugins: [],
 }
 

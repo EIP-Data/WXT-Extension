@@ -25,7 +25,7 @@ const handleSubmit = async () => {
       password: password.value
     });
 
-    auth.login(response.data.jwt);
+    await auth.login(response.data.jwt);
     toast.success(t('login.successMessage'));
   } catch (error) {
     toast.error(t('login.error'));
@@ -140,9 +140,10 @@ const passwordStrength = computed(() => {
 
         <button
             type="submit"
-            class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orangePrimary hover:bg-orangePrimary/80 dark:bg-orangePrimary-dark dark:hover:bg-orangePrimary-dark/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orangePrimary transition-colors duration-300"
+            class="w-full py-4 px-6 bg-gradient-to-r from-orangePrimary to-amber-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 active:scale-95 relative overflow-hidden"
         >
-          {{ t('login.submit') }}
+          <span class="relative z-10">{{ t('login.submit') }}</span>
+          <div class="absolute inset-0 bg-white/10 opacity-0 hover:opacity-20 transition-opacity"></div>
         </button>
         <p class="text-center text-sm text-gray-600 dark:text-gray-400">
           {{ t('login.register') }}

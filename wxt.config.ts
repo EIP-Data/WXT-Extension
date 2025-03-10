@@ -25,8 +25,7 @@ export default defineConfig({
       "activeTab",
       "storage",
     ],
-    host_permissions: ["<all_urls>",
-        '*://localhost/*' ],
+    host_permissions: ["<all_urls>"],
   },
   css: {
     postcss: {

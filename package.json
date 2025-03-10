@@ -24,6 +24,7 @@
     "flag-icons": "^7.3.2",
     "pinia": "^3.0.1",
     "postcss": "^8.5.3",
+    "primevue": "^4.3.1",
     "tailwindcss": "^3.4.17",
     "vue": "^3.5.12",
     "vue-i18n": "^11.1.1",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@types/chrome": "^0.0.280",
     "@wxt-dev/module-vue": "^1.0.1",
+    "tailwind-scrollbar": "^3.1.0",
     "typescript": "5.6.3",
     "vue-tsc": "^2.1.10",
     "wxt": "^0.19.13"
