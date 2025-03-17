@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
 import api from '@/utils/api';
 import { ShieldCheckIcon, PresentationChartBarIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import ProfilingChart from '@/components/Charts/ProfilingChart.vue';
 
 const router = useRouter();
 const toast = useToast();
@@ -30,7 +31,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-[400px] p-6 space-y-8 bg-gray-50 dark:bg-gray-900">
+  <div class="p-6 space-y-8 bg-gray-50 dark:bg-gray-900">
     <!-- Header Section -->
     <div class="space-y-2">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-50">
@@ -43,7 +44,7 @@ onMounted(() => {
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <!-- Cookies Blocked Card -->
+      <!-- Cookies Card -->
       <div class="bg-orangePrimary/10 dark:bg-orangePrimary-dark/20 p-6 rounded-xl transition-all duration-300 hover:scale-[1.02]">
         <div class="flex items-center gap-4">
           <div class="p-3 bg-orangePrimary/20 dark:bg-orangePrimary-dark/30 rounded-lg">
@@ -64,7 +65,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Trackers Stopped Card -->
+      <!-- Trackers Card -->
       <div class="bg-orangePrimary/10 dark:bg-orangePrimary-dark/20 p-6 rounded-xl transition-all duration-300 hover:scale-[1.02]">
         <div class="flex items-center gap-4">
           <div class="p-3 bg-orangePrimary/20 dark:bg-orangePrimary-dark/30 rounded-lg">
@@ -77,7 +78,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Ads Prevented Card -->
+      <!-- Ads Card -->
       <div class="bg-orangePrimary/10 dark:bg-orangePrimary-dark/20 p-6 rounded-xl transition-all duration-300 hover:scale-[1.02]">
         <div class="flex items-center gap-4">
           <div class="p-3 bg-orangePrimary/20 dark:bg-orangePrimary-dark/30 rounded-lg">
@@ -92,26 +93,47 @@ onMounted(() => {
     </div>
 
     <!-- Visualization Section -->
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-          {{ t("home.activity_today") }}
-        </h2>
-        <PresentationChartBarIcon class="w-6 h-6 text-orangePrimary dark:text-orangePrimary-dark" />
-      </div>
-      <div class="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse">
-        <!-- Add your chart implementation here -->
-      </div>
-    </div>
+    <ProfilingChart
+        chart-type="donut"
+        :metrics="{
+        trackers: [
+          { type: 'Analytics', count: 45, percentage: 35 },
+          { type: 'Ads', count: 32, percentage: 25 },
+          { type: 'Social', count: 28, percentage: 22 },
+          { type: 'Other', count: 15, percentage: 18 }
+        ],
+        ads: [],
+        locations: []
+      }"
+        >
+          <template #title>
+            {{ t("home.activity_today") }}
+          </template>
+    </ProfilingChart>
 
-    <!-- Quick Actions -->
-    <div class="grid grid-cols-2 gap-4">
-      <button class="p-4 bg-orangePrimary/10 dark:bg-orangePrimary-dark/20 rounded-xl hover:bg-orangePrimary/20 transition-colors">
-        <span class="text-orangePrimary dark:text-orangePrimary-dark font-medium">{{ t("home.quick_scan") }}</span>
-      </button>
-      <button class="p-4 bg-orangePrimary/10 dark:bg-orangePrimary-dark/20 rounded-xl hover:bg-orangePrimary/20 transition-colors">
-        <span class="text-orangePrimary dark:text-orangePrimary-dark font-medium">{{ t("home.settings") }}</span>
-      </button>
-    </div>
+    <ProfilingChart
+        chart-type="bar"
+        :metrics="{
+    trackers: [
+      { type: 'Analytics', count: 45 },
+      { type: 'Ads', count: 32 },
+      { type: 'Social', count: 28 },
+      { type: 'Other', count: 15 }
+    ],
+    ads: [],
+    locations: []
+  }"
+    >
+      <template #title>
+        {{ t("home.activity_today") }}
+      </template>
+      <template #icon>
+        <svg class="w-5 h-5 text-orangePrimary dark:text-orangePrimary-dark"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+      </template>
+    </ProfilingChart>
   </div>
 </template>
