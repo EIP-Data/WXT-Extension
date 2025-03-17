@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import vueI18n from '@intlify/unplugin-vue-i18n/vite';
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-  extensionApi: 'chrome',
+  extensionApi: 'webextension-polyfill',
   modules: ['@wxt-dev/module-vue'],
   vite: () => ({
     define: {

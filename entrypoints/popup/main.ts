@@ -10,6 +10,7 @@ import Login from '@/components/Login.vue';
 import Preferences from '@/components/Preferences.vue';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
 import {useAuthStore} from "@/stores/auth";
+import VueApexCharts from 'vue3-apexcharts';
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -73,4 +74,5 @@ app.use(Toast, {
 app.use(i18n);
 const auth = useAuthStore()
 auth.initLanguage()
+app.use(VueApexCharts)
 app.mount('#app');
