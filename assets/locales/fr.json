@@ -11,10 +11,10 @@
   "home": {
     "welcome": "Bienvenue",
     "user": "Utilisateur",
-    "subtitle": "Résumé de votre protection de navigation",
-    "cookies_blocked": "Cookies Bloqués",
-    "trackers_stopped": "Traqueurs Arrêtés",
-    "ads_prevented": "Publicités Bloquées",
+    "subtitle": "Résumé de votre navigation",
+    "cookies_blocked": "Cookies Tiers identifiés",
+    "trackers_stopped": "Trackers détecté",
+    "ads_prevented": "Régis Publicitaires identifiées",
     "activity_today": "Activité du Jour",
     "quick_scan": "Analyse Rapide",
     "settings": "Paramètres"

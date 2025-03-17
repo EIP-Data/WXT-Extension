@@ -73,23 +73,46 @@ const handleMenuAction = (itemId: string) => {
 </script>
 
 <template>
-  <div class="w-[400px] h-[600px] relative shadow-xl dark:border-gray-700
-             bg-gradient-to-br from-blue-50 to-indigo-100
-             dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-900
-             flex flex-col overflow-hidden">
-  >
+  <div class="w-[400px] h-[600px] relative shadow-xl border dark:border-gray-700
+           bg-white dark:bg-gray-800
+           flex flex-col overflow-hidden">
 
-  <div v-if="auth.isAuthenticated" class="flex justify-end p-2">
-        <button
-            @click.stop="showSettings = !showSettings"
-            class="p-2 hover:bg-gray-200 dark:hover:bg-gray-700/50
-               rounded-full transition-colors duration-200"
+    <div v-if="auth.isAuthenticated" class="flex justify-between items-center w-full px-6 py-4 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-100 dark:border-gray-700">
+      <router-link
+          to="/"
+          class="flex items-center space-x-4 group"
+          @click.prevent="handleMenuAction('home')"
+      >
+        <img
+            src="@/assets/logo.webp"
+            class="h-12 transition-transform duration-300 hover:scale-105 origin-left"
+            :alt="t('login.logoAlt')"
         >
-          <Cog6ToothIcon class="w-6 h-6 text-gray-600 dark:text-gray-300"/>
-        </button>
-      </div>
+        <div class="h-8 w-px bg-gray-200 dark:bg-gray-600"></div>
+      </router-link>
 
-      <transition name="slide">
+      <h1
+          class="text-3xl font-extrabold text-orangePrimary dark:text-orangePrimary-dark
+               tracking-tight transform transition-all duration-300 hover:scale-102
+               cursor-pointer"
+          @click.stop="handleMenuAction('home')"
+      >
+        Datalyz
+      </h1>
+
+      <button
+          @click.stop="showSettings = !showSettings"
+          class="p-3 hover:bg-gray-200 dark:hover:bg-gray-700/50 rounded-xl transition-all duration-300 group relative"
+      >
+        <Cog6ToothIcon
+            class="w-7 h-7 text-gray-600 dark:text-gray-300 transition-transform duration-500 group-hover:rotate-45"
+        />
+        <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 bg-orangePrimary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+      </button>
+    </div>
+
+
+    <transition name="slide">
         <div
             v-if="showSettings && auth.isAuthenticated"
             ref="dropdownRef"
@@ -149,7 +172,7 @@ const handleMenuAction = (itemId: string) => {
   dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in" @after-enter="handleScrollReset">
-          <component :is="Component" class="h-full" />
+          <component :is="Component" />
         </transition>
       </router-view>
     </div>

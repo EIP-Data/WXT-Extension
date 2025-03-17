@@ -42,8 +42,8 @@ const passwordStrength = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center min-h-[calc(100vh-96px)] p-4 transition-colors duration-300">
-    <div class="w-full max-w-md space-y-8">
+  <div class="flex items-center justify-center p-4 transition-colors duration-300">
+    <div class="w-full max-w-md space-y-8 shadow-xl rounded-lg">
       <div class="text-center">
         <img
             src="@/assets/logo.webp"
