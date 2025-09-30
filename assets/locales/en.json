@@ -6,7 +6,8 @@
     "dark_mode": "Dark Mode",
     "light_mode": "Light Mode",
     "logout": "Logout",
-    "login": "Login"
+    "login": "Login",
+    "realtime": "Analytics"
   },
   "home": {
     "welcome": "Welcome",

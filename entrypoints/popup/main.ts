@@ -7,6 +7,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Toast from 'vue-toast-notification'
 import Home from '@/components/Home.vue';
 import Login from '@/components/Login.vue';
+import RealTime from '@/components/RealTime.vue';
 import Preferences from '@/components/Preferences.vue';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
 import {useAuthStore} from "@/stores/auth";
@@ -26,6 +27,12 @@ const router = createRouter({
             name: 'Login',
             component: Login,
             meta: { requiresAuth: false }
+        },
+        {
+            path: '/realtime',
+            name: 'Realtime',
+            component: RealTime,
+            meta: { requiresAuth: true }
         },
         {
             path: '/preferences',

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
-import { ChevronDownIcon, Cog6ToothIcon, HomeIcon, AdjustmentsHorizontalIcon, LanguageIcon } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon, Cog6ToothIcon, HomeIcon, AdjustmentsHorizontalIcon, PresentationChartBarIcon } from '@heroicons/vue/24/outline'
 import { ref, computed, watch } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
@@ -30,6 +30,7 @@ onMounted(() => {
 const menuItems = computed(() => [
   { id: 'home', label: t('menu.home'), route: '/', requiresAuth: true, icon: HomeIcon },
   { id: 'preferences', label: t('menu.preferences'), route: '/preferences', requiresAuth: true, icon: AdjustmentsHorizontalIcon },
+  { id: 'realtime', label: t('menu.realtime'), route: '/realtime', requiresAuth: true, icon: PresentationChartBarIcon },
   {
     id: 'auth',
     label: auth.isAuthenticated ? t('menu.logout') : t('menu.login'),
