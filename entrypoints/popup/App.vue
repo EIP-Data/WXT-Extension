@@ -5,6 +5,7 @@ import { ChevronDownIcon, Cog6ToothIcon, HomeIcon, AdjustmentsHorizontalIcon, La
 import { ref, computed, watch } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
+import { ChartBarIcon } from '@heroicons/vue/24/outline'
 
 const { t } = useI18n()
 const { locale } = useI18n()
@@ -29,6 +30,7 @@ onMounted(() => {
 
 const menuItems = computed(() => [
   { id: 'home', label: t('menu.home'), route: '/', requiresAuth: true, icon: HomeIcon },
+  { id: 'analytics', label: t('menu.analytics'), route: '/analytics', requiresAuth: true, icon: ChartBarIcon },
   { id: 'preferences', label: t('menu.preferences'), route: '/preferences', requiresAuth: true, icon: AdjustmentsHorizontalIcon },
   {
     id: 'auth',
@@ -131,6 +133,9 @@ const handleMenuAction = (itemId: string) => {
               >
                 <template v-if="item.id === 'home'">
                   <HomeIcon class="w-5 h-5 text-gray-500 dark:text-gray-300" />
+                </template>
+                <template v-if="item.id === 'analytics'">
+                  <ChartBarIcon class="w-5 h-5 text-gray-500 dark:text-gray-300" />
                 </template>
                 <template v-if="item.id === 'preferences'">
                   <AdjustmentsHorizontalIcon class="w-5 h-5 text-gray-500 dark:text-gray-300" />

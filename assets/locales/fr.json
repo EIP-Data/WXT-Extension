@@ -6,7 +6,8 @@
     "dark_mode": "Mode Sombre",
     "light_mode": "Mode Clair",
     "logout": "Déconnexion",
-    "login": "Connexion"
+    "login": "Connexion",
+    "analytics": "Analyses Publicitaires"
   },
   "home": {
     "welcome": "Bienvenue",
@@ -45,7 +46,46 @@
     "loadSuccess": "Préférences chargées avec succès",
     "loadError": "Échec du chargement des préférences",
     "saveSuccess": "Préférences enregistrées avec succès",
-    "updateError": "Erreur lors de la mise à jour des préférences"
+    "updateError": "Erreur lors de la mise à jour des préférences",
+    "trackingTitle": "Paramètres de Suivi des Données",
+    "enableTracking": "Activer le Suivi des Données",
+    "trackingDescription": "Collecter les analyses d'interaction utilisateur",
+    "trackingEnabled": "Suivi activé avec succès",
+    "trackingDisabled": "Suivi désactivé avec succès",
+    "toggleError": "Échec de la bascule du suivi",
+    "statusActive": "Actif",
+    "statusInactive": "Inactif",
+    "analyticsTitle": "Analyses en Temps Réel",
+    "clearAnalytics": "Tout Effacer",
+    "clearAnalyticsError": "Échec de l'effacement des analyses",
+    "analyticsCleared": "Analyses effacées avec succès",
+    "totalEvents": "Événements Totaux",
+    "noAnalytics": "Aucune donnée analytique disponible",
+    "eventClick": "Clic",
+    "eventScroll": "Défilement",
+    "eventSession": "Session",
+    "eventInteraction": "Interaction",
+    "urlLabel": "URL",
+    "scrollDepth": "Profondeur de défilement",
+    "elementLabel": "Élément"
+  },
+  "analytics": {
+    "title": "Tableau de Bord Publicitaire",
+    "subtitle": "Suivez et analysez les publicités ciblées",
+    "clearAll": "Effacer Toutes les Données",
+    "totalAds": "Publicités Détectées",
+    "networks": "Réseaux Publicitaires",
+    "adTypes": "Types de Publicités",
+    "topNetworks": "Principaux Réseaux Publicitaires",
+    "byType": "Publicités par Type",
+    "byPublisher": "Publicités par Éditeur",
+    "recentAds": "Publicités Récemment Détectées",
+    "publisher": "Éditeur",
+    "ads": "publicités",
+    "noData": "Aucune publicité détectée pour le moment",
+    "loadError": "Échec du chargement des analyses",
+    "clearError": "Échec de l'effacement des données",
+    "cleared": "Données analytiques effacées"
   },
   "logout": {
     "SuccessMessage": "Vous avez été déconnecté avec succès"
