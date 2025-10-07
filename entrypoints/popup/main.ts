@@ -11,6 +11,7 @@ import Preferences from '@/components/Preferences.vue';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
 import {useAuthStore} from "@/stores/auth";
 import VueApexCharts from 'vue3-apexcharts';
+import Analytics from '@/components/Analytics.vue';
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -27,6 +28,12 @@ const router = createRouter({
             name: 'Login',
             component: Login,
             meta: { requiresAuth: false }
+        },
+        {
+            path: '/analytics',
+            name: 'Analytics',
+            component: Analytics,
+            meta: { requiresAuth: true }
         },
         {
             path: '/preferences',

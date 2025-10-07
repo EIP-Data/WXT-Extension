@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from "@/utils/api"
 import { UserPreferences } from "@/types/types"
-import { storage } from 'wxt/storage'
+import { storage } from "#imports"
 import i18n from '@/utils/i18n' // Import i18n instance directly
 
 const preferences = ref({} as UserPreferences)

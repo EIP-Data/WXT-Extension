@@ -24,6 +24,8 @@ export default defineConfig({
       "scripting",
       "activeTab",
       "storage",
+        "tabs",
+        "webRequest"
     ],
     host_permissions: ["<all_urls>"],
   },
