@@ -6,7 +6,8 @@
     "dark_mode": "Dark Mode",
     "light_mode": "Light Mode",
     "logout": "Logout",
-    "login": "Login"
+    "login": "Login",
+    "analytics": "Ad Analytics"
   },
   "home": {
     "welcome": "Welcome",
@@ -19,7 +20,7 @@
     "quick_scan": "Quick Scan",
     "settings": "Settings"
   },
-  "login" : {
+  "login": {
     "title": "Sign In",
     "subtitle": "Sign in to continue to your account",
     "email": "Email Address",
@@ -33,7 +34,7 @@
     "logoAlt": "Application Logo",
     "register": "Don't have an account?",
     "registerInstead": "Create one now",
-    "successMessage" : "Successfully connected"
+    "successMessage": "Successfully connected"
   },
   "preference": {
     "title": "Preferences",
@@ -45,7 +46,46 @@
     "loadSuccess": "Preferences loaded successfully",
     "loadError": "Failed to load preferences",
     "saveSuccess": "Preferences saved successfully",
-    "updateError": "Error updating preferences"
+    "updateError": "Error updating preferences",
+    "trackingTitle": "Data Tracking Settings",
+    "enableTracking": "Enable Data Tracking",
+    "trackingDescription": "Collect user interaction analytics for analysis",
+    "trackingEnabled": "Tracking enabled successfully",
+    "trackingDisabled": "Tracking disabled successfully",
+    "toggleError": "Failed to toggle tracking",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "analyticsTitle": "Real-Time Analytics",
+    "clearAnalytics": "Clear All",
+    "clearAnalyticsError": "Failed to clear analytics",
+    "analyticsCleared": "Analytics cleared successfully",
+    "totalEvents": "Total Events",
+    "noAnalytics": "No analytics data available",
+    "eventClick": "Click",
+    "eventScroll": "Scroll",
+    "eventSession": "Session",
+    "eventInteraction": "Interaction",
+    "urlLabel": "URL",
+    "scrollDepth": "Scroll Depth",
+    "elementLabel": "Element"
+  },
+  "analytics": {
+    "title": "Ad Analytics Dashboard",
+    "subtitle": "Track and analyze targeted advertisements",
+    "clearAll": "Clear All Data",
+    "totalAds": "Total Ads Detected",
+    "networks": "Ad Networks",
+    "adTypes": "Ad Types",
+    "topNetworks": "Top Ad Networks",
+    "byType": "Ads by Type",
+    "byPublisher": "Ads by Publisher",
+    "recentAds": "Recently Detected Ads",
+    "publisher": "Publisher",
+    "ads": "ads",
+    "noData": "No ads detected yet",
+    "loadError": "Failed to load analytics",
+    "clearError": "Failed to clear data",
+    "cleared": "Analytics data cleared"
   },
   "logout": {
     "SuccessMessage": "You have been logged out successfully"
