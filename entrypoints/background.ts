@@ -1,6 +1,7 @@
 import i18n from "@/utils/i18n";
 import { easyListManager } from "@/utils/easyListParser";
 import { categorizeAdType } from "@/utils/adCategories";
+import axios from 'axios';
 
 interface AdData {
     type: 'ad_detected';
@@ -175,4 +176,36 @@ export default defineBackground(() => {
 
         return stats;
     }
+
+
+
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.action === 'API_PROXY_REQUEST') {
+            const { url, method, data, headers, baseURL } = message.data;
+
+            const client = axios.create({
+                baseURL: baseURL,
+                headers: headers
+            });
+
+            client.request({ url, method, data })
+                .then((response) => {
+                    sendResponse({
+                        success: true,
+                        data: {
+                            data: response.data,
+                            status: response.status
+                        }
+                    });
+                })
+                .catch((error) => {
+                    console.error("Background API Fetch Error:", error);
+                    sendResponse({
+                        success: false,
+                        error: error.message || 'Unknown network error'
+                    });
+                });
+        return true;
+        }
+    });
 });
