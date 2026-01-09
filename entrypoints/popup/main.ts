@@ -82,4 +82,7 @@ app.use(i18n);
 const auth = useAuthStore()
 auth.initLanguage()
 app.use(VueApexCharts)
-app.mount('#app');
+
+auth.initAuth().then(() => {
+    app.mount('#app');
+});

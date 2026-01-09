@@ -1,53 +1,67 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import api from "@/utils/api"
-import { UserPreferences } from "@/types/types"
-import { storage } from "#imports"
-import i18n from '@/utils/i18n' // Import i18n instance directly
-
-const preferences = ref({} as UserPreferences)
+// stores/auth.ts
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import apiHandler from "@/utils/api"
+import { UserPreferences } from "@/types/types";
+import { storage } from '#imports';
+import i18n from '@/utils/i18n';
 
 export const useAuthStore = defineStore('auth', () => {
-    const router = useRouter()
-    const route = useRoute()
-    const isAuthenticated = ref(!!localStorage.getItem('authToken'))
+    const router = useRouter();
+    const route = useRoute();
 
-    const getCurrentLocale = () => i18n.global.locale.value
-    const setLocale = (lang: string) => {
-        i18n.global.locale.value = lang
-    }
+    // State
+    const isAuthenticated = ref(false);
+    const preferences = ref({} as UserPreferences);
+
+    // Initialize Auth State (Async)
+    const initAuth = async () => {
+        const token = await storage.getItem<string>('local:authToken');
+        isAuthenticated.value = !!token;
+
+        if (token) {
+            // Note: pass this token in every apiProxy request
+        }
+
+        const lang = await storage.getItem<string>('local:user-lang');
+        if (lang) {
+            i18n.global.locale.value = lang;
+        }
+    };
 
     const login = async (token: string) => {
-        localStorage.setItem('authToken', token)
-        isAuthenticated.value = true
+        await storage.setItem('local:authToken', token);
+        isAuthenticated.value = true;
+
         try {
-            const response = await api.get('/preferences')
-            preferences.value = response.data.preferences
-            await storage.setItem('local:user-lang', preferences.value.language)
-            setLocale(preferences.value.language)
+            const response = await apiHandler.get('/preferences', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            preferences.value = response.preferences;
+
+            await storage.setItem('local:user-lang', preferences.value.language);
+            i18n.global.locale.value = preferences.value.language;
         } catch (error) {
-            console.error('Failed to load preferences:', error)
+            console.error('Failed to load preferences:', error);
         }
-        await router.replace(route.query.redirect?.toString() || '/')
-    }
 
-    const initLanguage = async () => {
-        const lang = await storage.getItem('local:user-lang')
-        if (lang?.value) setLocale(lang.value)
-    }
+        const redirectPath = route.query.redirect?.toString() || '/';
+        await router.replace(redirectPath);
+    };
 
-    const logout = () => {
-        localStorage.removeItem('authToken')
-        isAuthenticated.value = false
-        router.replace(route.query.redirect?.toString() || '/login')
-    }
+    const logout = async () => {
+        await storage.removeItem('local:authToken');
+        isAuthenticated.value = false;
+        await router.replace('/login');
+    };
 
     return {
         isAuthenticated,
         login,
         logout,
-        initLanguage,
-        currentLocale: getCurrentLocale // Expose if needed
-    }
-})
+        initAuth,
+        preferences
+    };
+});
