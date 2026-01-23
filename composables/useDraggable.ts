@@ -11,7 +11,7 @@ export function useDraggable() {
             position.value = result.overlayPosition;
         } else {
             // Default position (top-right with some margin)
-            position.value = { x: window.innerWidth - 380, y: 20 };
+            position.value = { x: window.innerWidth - 470, y: 20 };
         }
     };
 
@@ -38,7 +38,7 @@ export function useDraggable() {
         const newY = event.clientY - dragStart.value.y;
 
         // Keep overlay within viewport bounds
-        const maxX = window.innerWidth - 360; // overlay width
+        const maxX = window.innerWidth - 450;  // overlay width
         const maxY = window.innerHeight - 100; // minimum visible height
 
         position.value = {
