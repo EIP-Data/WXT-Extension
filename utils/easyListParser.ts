@@ -1,4 +1,5 @@
 import { FiltersEngine, Request } from '@cliqz/adblocker';
+import type { RequestType } from '@cliqz/adblocker';
 import { detectNetworkFromUrl } from '@/utils/networkDetector';
 
 const DEBUG = import.meta.env.DEV ?? false;
@@ -140,7 +141,7 @@ export class EasyListManager {
             const request = Request.fromRawDetails({
                 url,
                 sourceUrl,
-                type: this.mapResourceType(type)
+                type: this.mapResourceType(type) as RequestType
             });
             return this.engine.match(request).match;
         } catch (e) {
@@ -157,7 +158,7 @@ export class EasyListManager {
                 type: 'other'
             });
             const result = this.engine.match(request);
-            return result.filter ? result.filter.rawLine : null;
+            return result.filter ? (result.filter.rawLine ?? null) : null;
         } catch (e) {
             return null;
         }
