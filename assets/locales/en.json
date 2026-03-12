@@ -6,20 +6,21 @@
     "dark_mode": "Dark Mode",
     "light_mode": "Light Mode",
     "logout": "Logout",
-    "login": "Login"
+    "login": "Login",
+    "analytics": "Ad Analytics"
   },
   "home": {
     "welcome": "Welcome",
     "user": "User",
-    "subtitle": "Your browsing protection summary",
-    "cookies_blocked": "Cookies Blocked",
-    "trackers_stopped": "Trackers Stopped",
-    "ads_prevented": "Ads Prevented",
+    "subtitle": "Your browsing summary",
+    "cookies_blocked": "Cookies identified",
+    "trackers_stopped": "Trackers detected",
+    "ads_prevented": "Advertising agency identified",
     "activity_today": "Today's Activity",
     "quick_scan": "Quick Scan",
     "settings": "Settings"
   },
-  "login" : {
+  "login": {
     "title": "Sign In",
     "subtitle": "Sign in to continue to your account",
     "email": "Email Address",
@@ -33,7 +34,7 @@
     "logoAlt": "Application Logo",
     "register": "Don't have an account?",
     "registerInstead": "Create one now",
-    "successMessage" : "Successfully connected"
+    "successMessage": "Successfully connected"
   },
   "preference": {
     "title": "Preferences",
@@ -45,9 +46,70 @@
     "loadSuccess": "Preferences loaded successfully",
     "loadError": "Failed to load preferences",
     "saveSuccess": "Preferences saved successfully",
-    "updateError": "Error updating preferences"
+    "updateError": "Error updating preferences",
+    "trackingTitle": "Data Tracking Settings",
+    "enableTracking": "Enable Data Tracking",
+    "trackingDescription": "Collect user interaction analytics for analysis",
+    "trackingEnabled": "Tracking enabled successfully",
+    "trackingDisabled": "Tracking disabled successfully",
+    "toggleError": "Failed to toggle tracking",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "analyticsTitle": "Real-Time Analytics",
+    "clearAnalytics": "Clear All",
+    "clearAnalyticsError": "Failed to clear analytics",
+    "analyticsCleared": "Analytics cleared successfully",
+    "totalEvents": "Total Events",
+    "noAnalytics": "No analytics data available",
+    "eventClick": "Click",
+    "eventScroll": "Scroll",
+    "eventSession": "Session",
+    "eventInteraction": "Interaction",
+    "urlLabel": "URL",
+    "scrollDepth": "Scroll Depth",
+    "elementLabel": "Element"
+  },
+  "analytics": {
+    "title": "Ad Analytics Dashboard",
+    "subtitle": "Track and analyze targeted advertisements",
+    "clearAll": "Clear All Data",
+    "totalAds": "Total Ads Detected",
+    "networks": "Ad Networks",
+    "adTypes": "Ad Types",
+    "topNetworks": "Top Ad Networks",
+    "byType": "Ads by Type",
+    "byPublisher": "Ads by Publisher",
+    "recentAds": "Recently Detected Ads",
+    "publisher": "Publisher",
+    "ads": "ads",
+    "noData": "No ads detected yet",
+    "loadError": "Failed to load analytics",
+    "clearError": "Failed to clear data",
+    "cleared": "Analytics data cleared"
   },
   "logout": {
     "SuccessMessage": "You have been logged out successfully"
+  },
+  "consent": {
+    "title": "Research Data Consent",
+    "subtitle": "Required under GDPR before any data is collected",
+    "purposeTitle": "Purpose",
+    "purposeBody": "Datalyz collects data about advertisements you encounter while browsing to support",
+    "purposeBodyBold": "academic research on hyperpersonalization in online advertising",
+    "purposeBodySuffix": "conducted by EIP-Data. Your data will only be used for this research.",
+    "collectTitle": "What we collect",
+    "collectAds": "Ad network names, ad types, and tracker categories",
+    "collectPage": "Page context — site category, page title, content language",
+    "collectSession": "Session metadata and timestamps",
+    "collectNotPrefix": "We do",
+    "collectNotBold": "not",
+    "collectNotSuffix": "collect passwords, form data, private messages, or browsing history outside of ads.",
+    "withdraw": "You may withdraw consent at any time in",
+    "withdrawBold": "Settings → Revoke Consent",
+    "privacyIntro": "Read our",
+    "privacyLinkText": "Privacy Policy",
+    "decline": "Decline",
+    "accept": "Accept",
+    "saving": "Saving…"
   }
 }
