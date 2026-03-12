@@ -1,15 +1,19 @@
+import type { AdData } from '@/types/types';
+
+const DEBUG = import.meta.env.DEV ?? false;
+
 export default defineContentScript({
     matches: ['<all_urls>'],
 
     main() {
         let isTrackingEnabled = true;
         let eventListenersActive = false;
-        const detectedAds: any[] = [];
+        const detectedAds: AdData[] = [];
         const detectedFingerprints = new Set<string>();
         let observer: MutationObserver | null = null;
         let intervalId: ReturnType<typeof setInterval> | null = null;
 
-        console.log('Content script initialized on:', window.location.href);
+        if (DEBUG) console.log('Content script initialized on:', window.location.href);
 
         // Get initial tracking state
         browser.runtime.sendMessage({ action: 'GET_TRACKING_STATE' })
@@ -19,7 +23,7 @@ export default defineContentScript({
                     startTracking();
                 }
             })
-            .catch((err) => console.log('Failed to get tracking state:', err));
+            .catch((err) => { if (DEBUG) console.log('Failed to get tracking state:', err); });
 
         // Listen for tracking state changes
         browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -28,10 +32,10 @@ export default defineContentScript({
 
                 if (isTrackingEnabled && !eventListenersActive) {
                     startTracking();
-                    console.log('✅ Tracking enabled');
+                    if (DEBUG) console.log('✅ Tracking enabled');
                 } else if (!isTrackingEnabled && eventListenersActive) {
                     stopTracking();
-                    console.log('❌ Tracking disabled');
+                    if (DEBUG) console.log('❌ Tracking disabled');
                 }
 
                 sendResponse({ received: true });
@@ -65,7 +69,7 @@ export default defineContentScript({
 
                     if (detectedFingerprints.has(fingerprint)) return;
 
-                    const adData = {
+                    const adData: AdData = {
                         type: 'ad_detected',
                         adType: classifyAdElement(el),
                         publisher: window.location.hostname,
@@ -73,9 +77,12 @@ export default defineContentScript({
                         url: window.location.href,
                         domain: window.location.hostname,
                         timestamp: Date.now(),
+                        filter: undefined,
+                        targeting: undefined,
+                        tracker: undefined,
                         metadata: {
                             selector: selector,
-                            className: el.className,
+                            className: el.className.toString(),
                             id: el.id,
                             fingerprint: fingerprint,
                         }
@@ -147,7 +154,7 @@ export default defineContentScript({
             });
 
             eventListenersActive = true;
-            console.log('📊 Ad tracking started');
+            if (DEBUG) console.log('📊 Ad tracking started');
         }
 
         function stopTracking() {
@@ -160,7 +167,7 @@ export default defineContentScript({
             detectedAds.splice(0);
             detectedFingerprints.clear();
             eventListenersActive = false;
-            console.log('🛑 Ad tracking stopped');
+            if (DEBUG) console.log('🛑 Ad tracking stopped');
         }
 
         // Initial start if enabled

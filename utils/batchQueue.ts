@@ -1,5 +1,7 @@
 import type { AdData, BatchPayload, QueueItem } from '@/types/types';
 
+const DEBUG = import.meta.env.DEV ?? false;
+
 class BatchQueueManager {
     private db: IDBDatabase | null = null;
     private readonly DB_NAME = 'DatalyzBatchQueue';
@@ -39,7 +41,7 @@ class BatchQueueManager {
 
             request.onsuccess = () => {
                 this.db = request.result;
-                console.log('BatchQueue DB initialized');
+                if (DEBUG) console.log('BatchQueue DB initialized');
                 resolve();
                 // Try to sync existing queue items on startup
                 this.processQueue();
@@ -54,13 +56,13 @@ class BatchQueueManager {
         // Only setup listeners if addEventListener is available
         if (typeof context.addEventListener === 'function') {
             context.addEventListener('online', () => {
-                console.log('Network online - processing queue');
+                if (DEBUG) console.log('Network online - processing queue');
                 this.isOnline = true;
                 this.processQueue();
             });
 
             context.addEventListener('offline', () => {
-                console.log('Network offline - queuing data');
+                if (DEBUG) console.log('Network offline - queuing data');
                 this.isOnline = false;
             });
         } else {
@@ -96,12 +98,12 @@ class BatchQueueManager {
         );
 
         if (isDuplicate) {
-            console.log('Duplicate ad detected, skipping:', fingerprint);
+            if (DEBUG) console.log('Duplicate ad detected, skipping:', fingerprint);
             return;
         }
 
         this.currentBatch.push(adData);
-        console.log(`Added to batch (${this.currentBatch.length}/${this.BATCH_SIZE})`);
+        if (DEBUG) console.log(`Added to batch (${this.currentBatch.length}/${this.BATCH_SIZE})`);
 
         // Auto-flush if batch size reached
         if (this.currentBatch.length >= this.BATCH_SIZE) {
@@ -111,7 +113,7 @@ class BatchQueueManager {
 
     async flushBatch(): Promise<void> {
         if (this.currentBatch.length === 0) {
-            console.log('No data to flush');
+            if (DEBUG) console.log('No data to flush');
             return;
         }
 
@@ -133,7 +135,7 @@ class BatchQueueManager {
             data: [...this.currentBatch]
         };
 
-        console.log(`Flushing batch: ${payload.data.length} items`);
+        if (DEBUG) console.log(`Flushing batch: ${payload.data.length} items`);
 
         // Clear current batch
         this.currentBatch = [];
@@ -166,7 +168,7 @@ class BatchQueueManager {
             const request = store.add(queueItem);
 
             request.onsuccess = () => {
-                console.log('Batch queued:', queueItem.id);
+                if (DEBUG) console.log('Batch queued:', queueItem.id);
                 resolve();
             };
             request.onerror = () => reject(request.error);
@@ -175,18 +177,18 @@ class BatchQueueManager {
 
     async processQueue(): Promise<void> {
         if (!this.isOnline || !this.db) {
-            console.log('Cannot process queue: offline or DB not ready');
+            if (DEBUG) console.log('Cannot process queue: offline or DB not ready');
             return;
         }
 
         const items = await this.getQueueItems();
-        console.log(`Processing ${items.length} queued batches`);
+        if (DEBUG) console.log(`Processing ${items.length} queued batches`);
 
         for (const item of items) {
             try {
                 await this.sendBatch(item);
                 await this.removeFromQueue(item.id);
-                console.log(`Successfully sent batch: ${item.id}`);
+                if (DEBUG) console.log(`Successfully sent batch: ${item.id}`);
             } catch (error) {
                 console.error(`Failed to send batch ${item.id}:`, error);
                 await this.handleFailedBatch(item);
@@ -197,18 +199,41 @@ class BatchQueueManager {
     private async getQueueItems(): Promise<QueueItem[]> {
         if (!this.db) return [];
 
-        return new Promise((resolve, reject) => {
+        // Fetch all items from IndexedDB and sort oldest-first
+        const allItems = await new Promise<QueueItem[]>((resolve, reject) => {
             const transaction = this.db!.transaction([this.STORE_NAME], 'readonly');
             const store = transaction.objectStore(this.STORE_NAME);
             const request = store.getAll();
 
             request.onsuccess = () => {
-                // Sort by creation time (oldest first)
-                const items = request.result.sort((a, b) => a.createdAt - b.createdAt);
-                resolve(items);
+                resolve(request.result.sort((a: QueueItem, b: QueueItem) => a.createdAt - b.createdAt));
             };
             request.onerror = () => reject(request.error);
         });
+
+        // Split into active items and dead-letter items
+        const now = Date.now();
+        const expired: QueueItem[] = [];
+        const active: QueueItem[] = [];
+
+        for (const item of allItems) {
+            if (item.attempts >= 1 && now - item.createdAt > this.BATCH_AGE_THRESHOLD) {
+                expired.push(item);
+            } else {
+                active.push(item);
+            }
+        }
+
+        // Evict dead-letter items from IndexedDB
+        if (expired.length > 0) {
+            if (DEBUG) console.log(`Dead-letter: evicting ${expired.length} stale batch(es) from queue`);
+            for (const item of expired) {
+                console.error(`Evicting dead-letter batch ${item.id} (age: ${now - item.createdAt}ms, attempts: ${item.attempts})`);
+                await this.removeFromQueue(item.id);
+            }
+        }
+
+        return active;
     }
 
     private async sendBatch(item: QueueItem): Promise<void> {
@@ -237,7 +262,7 @@ class BatchQueueManager {
 
         // Calculate exponential backoff delay
         const delayMs = Math.min(1000 * Math.pow(2, item.attempts), 60000); // Max 1 minute
-        console.log(`Will retry batch ${item.id} after ${delayMs}ms (attempt ${item.attempts}/${this.MAX_RETRIES})`);
+        if (DEBUG) console.log(`Will retry batch ${item.id} after ${delayMs}ms (attempt ${item.attempts}/${this.MAX_RETRIES})`);
 
         // Schedule retry
         setTimeout(() => {
@@ -289,7 +314,7 @@ class BatchQueueManager {
 
             request.onsuccess = () => {
                 this.currentBatch = [];
-                console.log('Queue cleared');
+                if (DEBUG) console.log('Queue cleared');
                 resolve();
             };
             request.onerror = () => reject(request.error);
