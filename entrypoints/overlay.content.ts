@@ -6,6 +6,7 @@ import Toast from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
 import VueApexCharts from 'vue3-apexcharts';
 import { useAuthStore } from '@/stores/auth';
+import { useConsentStore } from '@/stores/consent';
 import '@/assets/style.css';
 
 let overlayApp: any = null;
@@ -50,6 +51,12 @@ export default defineContentScript({
 
                 const authStore = useAuthStore();
                 authStore.initAuth();
+
+                // Initialise consent store so hasConsented is populated
+                // before the first render (prevents a flash of the consent modal
+                // for users who have already decided).
+                const consentStore = useConsentStore();
+                consentStore.initConsent();
 
                 overlayApp = app;
                 app.mount(container);

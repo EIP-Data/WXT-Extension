@@ -10,7 +10,7 @@ import axios from 'axios';
 const DEBUG = import.meta.env.DEV ?? false;
 
 export default defineBackground(() => {
-    let isTrackingEnabled = true;
+    let isTrackingEnabled = false; // stays false until consent is confirmed
     if (DEBUG) console.log('Background script initializing...');
 
     // 1. Initialize EasyList
@@ -18,9 +18,10 @@ export default defineBackground(() => {
         if (DEBUG) console.log('EasyList ready');
     });
 
-    // 2. Load initial state
-    browser.storage.local.get(['trackingEnabled']).then((result) => {
-        isTrackingEnabled = result.trackingEnabled ?? true;
+    // 2. Load initial state — consent MUST be verified before enabling tracking
+    browser.storage.local.get(['trackingEnabled', 'userConsent']).then((result) => {
+        const hasConsented = result.userConsent?.hasConsented === true;
+        isTrackingEnabled = hasConsented && (result.trackingEnabled ?? false);
     });
 
     // 3. Helper Functions
@@ -150,8 +151,23 @@ export default defineBackground(() => {
                     }
 
                     case 'TOGGLE_TRACKING': {
-                        isTrackingEnabled = message.data.enabled;
+                        // Consent is required to enable tracking; disabling is always allowed
+                        const consentResult = await browser.storage.local.get(['userConsent']);
+                        const hasConsented = consentResult.userConsent?.hasConsented === true;
+                        isTrackingEnabled = message.data.enabled === true && hasConsented;
                         await browser.storage.local.set({ trackingEnabled: isTrackingEnabled });
+
+                        // Notify all content scripts of the new state
+                        const tabs = await browser.tabs.query({});
+                        for (const tab of tabs) {
+                            if (tab.id) {
+                                browser.tabs.sendMessage(tab.id, {
+                                    action: 'TRACKING_STATE_CHANGED',
+                                    data: { enabled: isTrackingEnabled },
+                                }).catch(() => {});
+                            }
+                        }
+
                         sendResponse({ success: true, enabled: isTrackingEnabled });
                         break;
                     }
