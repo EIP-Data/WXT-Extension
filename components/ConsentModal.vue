@@ -1,8 +1,23 @@
 <template>
   <div class="flex flex-col h-full p-5 gap-4">
 
-    <!-- Icon + heading -->
+    <!-- Icon + heading + language switcher -->
     <div class="text-center">
+      <!-- Language pill toggle -->
+      <div class="flex justify-end mb-1">
+        <div class="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-700/60 rounded-lg p-0.5">
+          <button
+            v-for="lang in (['en', 'fr'] as const)"
+            :key="lang"
+            @click="switchLanguage(lang)"
+            class="px-2.5 py-0.5 rounded-md text-xs font-semibold transition-all duration-150"
+            :class="currentLocale === lang
+              ? 'bg-white dark:bg-gray-600 text-orange-500 shadow-sm'
+              : 'text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'"
+          >{{ lang.toUpperCase() }}</button>
+        </div>
+      </div>
+
       <div class="flex justify-center mb-3">
         <div class="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
           <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -13,41 +28,42 @@
           </svg>
         </div>
       </div>
-      <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">Research Data Consent</h2>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Required under GDPR before any data is collected</p>
+      <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ t('consent.title') }}</h2>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ t('consent.subtitle') }}</p>
     </div>
 
     <!-- Purpose -->
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-      <p class="font-semibold text-blue-700 dark:text-blue-400 mb-1">Purpose</p>
+      <p class="font-semibold text-blue-700 dark:text-blue-400 mb-1">{{ t('consent.purposeTitle') }}</p>
       <p>
-        Datalyz collects data about advertisements you encounter while browsing to support
-        <strong>academic research on hyperpersonalization in online advertising</strong> conducted by EIP-Data.
-        Your data will only be used for this research.
+        {{ t('consent.purposeBody') }}
+        <strong>{{ t('consent.purposeBodyBold') }}</strong>
+        {{ t('consent.purposeBodySuffix') }}
       </p>
     </div>
 
     <!-- What is collected -->
     <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-      <p class="font-semibold text-gray-700 dark:text-gray-300 mb-2">What we collect</p>
+      <p class="font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('consent.collectTitle') }}</p>
       <ul class="space-y-1.5">
         <li class="flex items-start gap-2">
           <span class="text-orange-500 shrink-0 mt-px">✓</span>
-          <span>Ad network names, ad types, and tracker categories</span>
+          <span>{{ t('consent.collectAds') }}</span>
         </li>
         <li class="flex items-start gap-2">
           <span class="text-orange-500 shrink-0 mt-px">✓</span>
-          <span>Page context — site category, page title, content language</span>
+          <span>{{ t('consent.collectPage') }}</span>
         </li>
         <li class="flex items-start gap-2">
           <span class="text-orange-500 shrink-0 mt-px">✓</span>
-          <span>Session metadata and timestamps</span>
+          <span>{{ t('consent.collectSession') }}</span>
         </li>
         <li class="flex items-start gap-2">
           <span class="text-red-400 shrink-0 mt-px">✗</span>
           <span>
-            We do <strong class="text-gray-700 dark:text-gray-300">not</strong>
-            collect passwords, form data, private messages, or browsing history outside of ads.
+            {{ t('consent.collectNotPrefix') }}
+            <strong class="text-gray-700 dark:text-gray-300">{{ t('consent.collectNotBold') }}</strong>
+            {{ t('consent.collectNotSuffix') }}
           </span>
         </li>
       </ul>
@@ -55,15 +71,15 @@
 
     <!-- Privacy policy -->
     <p class="text-center text-xs text-gray-500 dark:text-gray-400">
-      You may withdraw consent at any time in
-      <strong class="text-gray-600 dark:text-gray-300">Settings → Revoke Consent</strong>.
-      Read our
+      {{ t('consent.withdraw') }}
+      <strong class="text-gray-600 dark:text-gray-300">{{ t('consent.withdrawBold') }}</strong>.
+      {{ t('consent.privacyIntro') }}
       <a
         href="https://datalyz.com/privacy"
         target="_blank"
         rel="noopener noreferrer"
         class="text-orange-500 hover:underline"
-      >Privacy Policy</a>.
+      >{{ t('consent.privacyLinkText') }}</a>.
     </p>
 
     <!-- Action buttons (equal visual weight — GDPR requirement) -->
@@ -76,7 +92,7 @@
                hover:bg-gray-100 dark:hover:bg-gray-700/50
                transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Decline
+        {{ t('consent.decline') }}
       </button>
 
       <button
@@ -93,9 +109,9 @@
             <path class="opacity-75" fill="currentColor"
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
           </svg>
-          Saving…
+          {{ t('consent.saving') }}
         </span>
-        <span v-else>Accept</span>
+        <span v-else>{{ t('consent.accept') }}</span>
       </button>
     </div>
   </div>
@@ -104,9 +120,25 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useConsentStore } from '@/stores/consent';
+import useI18n from '@/composables/useI18n';
+import i18n, { type I18nLocales } from '@/utils/i18n';
+import { storage } from '#imports';
 
 const consentStore = useConsentStore();
+const { t } = useI18n();
 const loading = ref(false);
+
+// Own ref that mirrors the global locale — avoids the pre-existing TS quirk
+// with vue-i18n's typed locale while keeping reactivity for the toggle buttons.
+const currentLocale = ref<I18nLocales>(
+  ((i18n.global.locale as unknown as { value: string }).value as I18nLocales) || 'en'
+);
+
+async function switchLanguage(lang: I18nLocales): Promise<void> {
+  (i18n.global.locale as unknown as { value: string }).value = lang;
+  currentLocale.value = lang;
+  await storage.setItem('local:user-lang', lang);
+}
 
 async function handleAccept(): Promise<void> {
   loading.value = true;

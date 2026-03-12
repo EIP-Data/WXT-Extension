@@ -89,5 +89,27 @@
   },
   "logout": {
     "SuccessMessage": "You have been logged out successfully"
+  },
+  "consent": {
+    "title": "Research Data Consent",
+    "subtitle": "Required under GDPR before any data is collected",
+    "purposeTitle": "Purpose",
+    "purposeBody": "Datalyz collects data about advertisements you encounter while browsing to support",
+    "purposeBodyBold": "academic research on hyperpersonalization in online advertising",
+    "purposeBodySuffix": "conducted by EIP-Data. Your data will only be used for this research.",
+    "collectTitle": "What we collect",
+    "collectAds": "Ad network names, ad types, and tracker categories",
+    "collectPage": "Page context — site category, page title, content language",
+    "collectSession": "Session metadata and timestamps",
+    "collectNotPrefix": "We do",
+    "collectNotBold": "not",
+    "collectNotSuffix": "collect passwords, form data, private messages, or browsing history outside of ads.",
+    "withdraw": "You may withdraw consent at any time in",
+    "withdrawBold": "Settings → Revoke Consent",
+    "privacyIntro": "Read our",
+    "privacyLinkText": "Privacy Policy",
+    "decline": "Decline",
+    "accept": "Accept",
+    "saving": "Saving…"
   }
 }
