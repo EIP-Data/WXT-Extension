@@ -5,6 +5,12 @@ const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
 
 // Helper: Check if we are in a Content Script (Overlay)
 const isContentScript = () => {
+    // Check if we're NOT in a service worker/background context
+    if (typeof self !== 'undefined' && self.constructor.name === 'ServiceWorkerGlobalScope') {
+        return false; // We're in a service worker
+    }
+
+    // Check if we're in a regular web page (content script)
     return typeof window !== 'undefined' &&
         !window.location.protocol.startsWith('chrome-extension') &&
         !window.location.protocol.startsWith('moz-extension');

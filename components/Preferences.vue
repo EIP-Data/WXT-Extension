@@ -204,14 +204,14 @@ onMounted(async () => {
               <div class="absolute right-3 top-1/2 -translate-y-1/2 flex space-x-2">
                 <button
                     type="button"
-                    @click="preferences.data_expiration = Math.max(1, preferences.data_expiration - 1)"
+                    @click.stop="preferences.data_expiration = Math.max(1, preferences.data_expiration - 1)"
                     class="w-8 h-8 flex items-center justify-center rounded-lg bg-orangePrimary/10 hover:bg-orangePrimary/20 text-orangePrimary transition-colors"
                 >
                   −
                 </button>
                 <button
                     type="button"
-                    @click="preferences.data_expiration = Math.min(365, preferences.data_expiration + 1)"
+                    @click.stop="preferences.data_expiration = Math.min(365, preferences.data_expiration + 1)"
                     class="w-8 h-8 flex items-center justify-center rounded-lg bg-orangePrimary/10 hover:bg-orangePrimary/20 text-orangePrimary transition-colors"
                 >
                   +
@@ -338,7 +338,8 @@ onMounted(async () => {
               <span class="text-xs text-gray-600 dark:text-gray-400">{{ t('preference.scrollDepth') }}:</span>
               <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                 <div
-                    class="h-full bg-gradient-to-r from-orangePrimary to-amber-600 transition-all duration-300"
+                    class="h-full bg-gradient-
+                    3to-r from-orangePrimary to-amber-600 transition-all duration-300"
                     :style="{ width: `${event.scrollDepth}%` }"
                 ></div>
               </div>

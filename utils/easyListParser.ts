@@ -14,7 +14,6 @@ export class EasyListManager {
         console.log('Initializing EasyList engine...');
 
         try {
-            // Try to load from IndexedDB using WXT storage
             const stored = await this.getStoredEngine();
 
             if (stored && stored.engine && stored.timestamp) {
@@ -61,13 +60,8 @@ export class EasyListManager {
             this.engine = FiltersEngine.parse(combinedFilters);
             this.lastUpdate = Date.now();
 
-            // Serialize to Uint8Array (binary format)
             const serialized = this.engine.serialize();
-
-            // Convert Uint8Array to regular array for storage
             const arrayData = Array.from(serialized);
-
-            // Store using IndexedDB via a custom storage method
             await this.storeEngine(arrayData, this.lastUpdate);
 
             console.log('EasyList filters updated successfully');
@@ -77,37 +71,26 @@ export class EasyListManager {
         }
     }
 
-    // Custom storage using IndexedDB directly
     private async storeEngine(engineData: number[], timestamp: number): Promise<void> {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open('EasyListDB', 1);
-
             request.onerror = () => reject(request.error);
-
             request.onupgradeneeded = (event) => {
                 const db = (event.target as IDBOpenDBRequest).result;
                 if (!db.objectStoreNames.contains('filters')) {
                     db.createObjectStore('filters');
                 }
             };
-
             request.onsuccess = () => {
                 const db = request.result;
                 const transaction = db.transaction(['filters'], 'readwrite');
                 const store = transaction.objectStore('filters');
-
-                const data = {
-                    engine: engineData,
-                    timestamp: timestamp
-                };
-
+                const data = { engine: engineData, timestamp: timestamp };
                 const putRequest = store.put(data, 'easylist');
-
                 putRequest.onsuccess = () => {
                     db.close();
                     resolve();
                 };
-
                 putRequest.onerror = () => {
                     db.close();
                     reject(putRequest.error);
@@ -119,34 +102,27 @@ export class EasyListManager {
     private async getStoredEngine(): Promise<{ engine: number[], timestamp: number } | null> {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open('EasyListDB', 1);
-
             request.onerror = () => reject(request.error);
-
             request.onupgradeneeded = (event) => {
                 const db = (event.target as IDBOpenDBRequest).result;
                 if (!db.objectStoreNames.contains('filters')) {
                     db.createObjectStore('filters');
                 }
             };
-
             request.onsuccess = () => {
                 const db = request.result;
-
                 if (!db.objectStoreNames.contains('filters')) {
                     db.close();
                     resolve(null);
                     return;
                 }
-
                 const transaction = db.transaction(['filters'], 'readonly');
                 const store = transaction.objectStore('filters');
                 const getRequest = store.get('easylist');
-
                 getRequest.onsuccess = () => {
                     db.close();
                     resolve(getRequest.result || null);
                 };
-
                 getRequest.onerror = () => {
                     db.close();
                     reject(getRequest.error);
@@ -157,14 +133,12 @@ export class EasyListManager {
 
     isAdRequest(url: string, sourceUrl: string, type: string = 'other'): boolean {
         if (!this.engine) return false;
-
         try {
             const request = Request.fromRawDetails({
                 url,
                 sourceUrl,
                 type: this.mapResourceType(type)
             });
-
             return this.engine.match(request).match;
         } catch (e) {
             return false;
@@ -173,14 +147,12 @@ export class EasyListManager {
 
     getMatchingFilter(url: string, sourceUrl: string): string | null {
         if (!this.engine) return null;
-
         try {
             const request = Request.fromRawDetails({
                 url,
                 sourceUrl,
                 type: 'other'
             });
-
             const result = this.engine.match(request);
             return result.filter ? result.filter.rawLine : null;
         } catch (e) {
@@ -203,35 +175,72 @@ export class EasyListManager {
             websocket: 'websocket',
             other: 'other'
         };
-
         return typeMap[type] || 'other';
     }
 
-    extractAdNetwork(filter: string): string {
+    extractAdNetwork(filter: string, url: string): string {
+        // First check URL domain
+        const urlNetwork = this.detectNetworkFromUrl(url);
+        if (urlNetwork !== 'Unknown Network') return urlNetwork;
+
+        // Then check filter patterns
         const networks: Record<string, RegExp> = {
-            'Google Ads': /googlesyndication|doubleclick|googleadservices/i,
-            'Facebook Ads': /facebook\.net|fbcdn\.net/i,
-            'Amazon Ads': /amazon-adsystem/i,
-            'Twitter Ads': /ads-twitter/i,
-            'LinkedIn Ads': /linkedin.*ads/i,
-            'Taboola': /taboola/i,
-            'Outbrain': /outbrain/i,
-            'Criteo': /criteo/i,
-            'AppNexus': /adnxs/i,
-            'The Trade Desk': /adsrvr/i,
-            'Rubicon': /rubiconproject/i,
-            'PubMatic': /pubmatic/i,
-            'OpenX': /openx/i,
-            'Microsoft Ads': /ads\.microsoft|bat\.bing/i,
+            'Google Ads': /googlesyndication|googleadservices|adsense/i,
+            'Google DoubleClick': /doubleclick\.net|2mdn\.net|adservice\.google/i,
+            'Facebook Ads': /facebook\.net|fbcdn\.net|connect\.facebook/i,
+            'Amazon Ads': /amazon-adsystem|aax\.amazon/i,
+            'Microsoft Ads': /ads\.microsoft|bat\.bing|msn\.com\/ads/i,
+            'Twitter Ads': /ads-twitter|analytics\.twitter|t\.co\/i/i,
+            'TikTok Ads': /tiktok.*analytics|bytedance.*ads/i,
+            'LinkedIn Ads': /linkedin.*ads|ads\.linkedin/i,
+            'Taboola': /taboola|trc\.taboola/i,
+            'Outbrain': /outbrain|widgets\.outbrain/i,
+            'Criteo': /criteo|cas\.criteo/i,
+            'AppNexus/Xandr': /adnxs|appnexus/i,
+            'The Trade Desk': /adsrvr|thetradedesk/i,
+            'Rubicon/Magnite': /rubiconproject|\.rfihub/i,
+            'PubMatic': /pubmatic|ads\.pubmatic/i,
+            'OpenX': /openx|delivery\.ox/i,
+            'Index Exchange': /indexexchange|casalemedia/i,
+            'MediaMath': /mediamath|mathtag/i,
+            'AdRoll': /adroll|d\.adroll/i,
+            'Quantcast': /quantserve|quantcast/i,
         };
 
+        const combined = filter + ' ' + url;
         for (const [network, pattern] of Object.entries(networks)) {
-            if (pattern.test(filter)) {
+            if (pattern.test(combined)) {
                 return network;
             }
         }
 
-        return 'Unknown Ad Network';
+        return 'Unknown Network';
+    }
+
+    private detectNetworkFromUrl(url: string): string {
+        try {
+            const urlObj = new URL(url);
+            const domain = urlObj.hostname.toLowerCase();
+
+            if (domain.includes('doubleclick')) return 'Google DoubleClick';
+            if (domain.includes('googlesyndication')) return 'Google Ads';
+            if (domain.includes('googleadservices')) return 'Google Ads';
+            if (domain.includes('facebook')) return 'Facebook Ads';
+            if (domain.includes('amazon-adsystem')) return 'Amazon Ads';
+            if (domain.includes('taboola')) return 'Taboola';
+            if (domain.includes('outbrain')) return 'Outbrain';
+            if (domain.includes('criteo')) return 'Criteo';
+            if (domain.includes('adnxs')) return 'AppNexus/Xandr';
+            if (domain.includes('adsrvr')) return 'The Trade Desk';
+            if (domain.includes('rubiconproject')) return 'Rubicon/Magnite';
+            if (domain.includes('pubmatic')) return 'PubMatic';
+            if (domain.includes('openx')) return 'OpenX';
+            if (domain.includes('indexexchange') || domain.includes('casalemedia')) return 'Index Exchange';
+
+            return 'Unknown Network';
+        } catch {
+            return 'Unknown Network';
+        }
     }
 
     categorizeAdFromFilter(filter: string, url: string): string {

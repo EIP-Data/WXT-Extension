@@ -11,6 +11,7 @@ const adsData = ref<any[]>([]);
 const stats = ref<any>({});
 const isLoading = ref(true);
 const isTrackingEnabled = ref(true);
+const queueStats = ref({ pending: 0, oldestBatch: undefined }); // Move this up here
 
 const topNetworks = computed(() => {
   if (!stats.value.byNetwork) return [];
@@ -36,27 +37,7 @@ const topPublishers = computed(() => {
       .map(([publisher, count]) => ({ publisher, count }));
 });
 
-onMounted(async () => {
-  // Check tracking state
-  const stateResponse = await browser.runtime.sendMessage({ action: 'GET_TRACKING_STATE' });
-  isTrackingEnabled.value = stateResponse.enabled;
-
-  // Load ads data
-  await loadAdsData();
-
-  // Listen for real-time ad detections
-  browser.runtime.onMessage.addListener((message) => {
-    if (message.action === 'AD_DETECTED') {
-      adsData.value.unshift(message.data);
-      if (adsData.value.length > 100) {
-        adsData.value.pop();
-      }
-      // Recalculate stats
-      loadAdsData();
-    }
-  });
-});
-
+// Declare loadAdsData BEFORE onMounted so it can be called
 const loadAdsData = async () => {
   isLoading.value = true;
   try {
@@ -64,6 +45,7 @@ const loadAdsData = async () => {
     if (response && response.data) {
       adsData.value = response.data;
       stats.value = response.stats || {};
+      queueStats.value = response.queueStats || { pending: 0 };
     }
   } catch (error) {
     console.error('Failed to load ads analytics:', error);
@@ -84,6 +66,17 @@ const clearAdsData = async () => {
   }
 };
 
+const forceSync = async () => {
+  try {
+    await browser.runtime.sendMessage({ action: 'FORCE_SYNC' });
+    toast.success(t('analytics.syncStarted'));
+    // Reload data after a delay
+    setTimeout(loadAdsData, 2000);
+  } catch (error) {
+    toast.error(t('analytics.syncError'));
+  }
+};
+
 const formatTimestamp = (timestamp: number) => {
   return new Date(timestamp).toLocaleString();
 };
@@ -98,6 +91,27 @@ const getNetworkColor = (index: number) => {
   ];
   return colors[index % colors.length];
 };
+
+onMounted(async () => {
+  // Check tracking state
+  const stateResponse = await browser.runtime.sendMessage({ action: 'GET_TRACKING_STATE' });
+  isTrackingEnabled.value = stateResponse.enabled;
+
+  // Load ads data
+  await loadAdsData();
+
+  // Listen for real-time ad detections
+  browser.runtime.onMessage.addListener((message) => {
+    if (message.action === 'AD_DETECTED') {
+      adsData.value.unshift(message.data);
+      if (adsData.value.length > 100) {
+        adsData.value.pop();
+      }
+      // Recalculate stats
+      loadAdsData();
+    }
+  });
+});
 </script>
 
 <template>
@@ -154,6 +168,28 @@ const getNetworkColor = (index: number) => {
               <p class="text-4xl font-bold">{{ Object.keys(stats.byType || {}).length }}</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div v-if="queueStats.pending > 0" class="bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl shadow-xl p-6 border-2 border-yellow-400">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-yellow-800 dark:text-yellow-200">
+              📤 {{ t('analytics.syncStatus') }}
+            </h2>
+            <p class="text-yellow-700 dark:text-yellow-300 mt-1">
+              {{ queueStats.pending }} {{ t('analytics.batchesPending') }}
+            </p>
+            <p v-if="queueStats.oldestBatch" class="text-sm text-yellow-600 dark:text-yellow-400 mt-1">
+              {{ t('analytics.oldestBatch') }}: {{ formatTimestamp(queueStats.oldestBatch) }}
+            </p>
+          </div>
+          <button
+              @click="forceSync"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-all font-medium shadow-md"
+          >
+            {{ t('analytics.syncNow') }}
+          </button>
         </div>
       </div>
 
