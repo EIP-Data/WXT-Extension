@@ -1,4 +1,5 @@
 import type { AdData } from '@/types/types';
+import { extractPageContext } from '@/utils/pageContextExtractor';
 
 const DEBUG = import.meta.env.DEV ?? false;
 
@@ -6,12 +7,15 @@ export default defineContentScript({
     matches: ['<all_urls>'],
 
     main() {
-        let isTrackingEnabled = true;
+        let isTrackingEnabled = false; // stays false until background confirms consent
         let eventListenersActive = false;
         const detectedAds: AdData[] = [];
         const detectedFingerprints = new Set<string>();
         let observer: MutationObserver | null = null;
         let intervalId: ReturnType<typeof setInterval> | null = null;
+
+        // Extracted once per page load and attached to every ad record
+        const pageContext = extractPageContext();
 
         if (DEBUG) console.log('Content script initialized on:', window.location.href);
 
@@ -80,6 +84,7 @@ export default defineContentScript({
                         filter: undefined,
                         targeting: undefined,
                         tracker: undefined,
+                        pageContext,
                         metadata: {
                             selector: selector,
                             className: el.className.toString(),

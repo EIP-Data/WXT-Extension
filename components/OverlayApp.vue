@@ -77,14 +77,16 @@
         <!-- Top gradient fade -->
         <div class="sticky top-0 h-4 bg-gradient-to-b from-gray-50 dark:from-gray-900 to-transparent pointer-events-none z-10"></div>
 
-        <component :is="activeComponent" @navigate="navigate" />
+        <!-- Consent gate: shown on first install until the user decides -->
+        <ConsentModal v-if="consentStore.hasConsented === null" />
+        <component v-else :is="activeComponent" @navigate="navigate" />
 
         <!-- Bottom gradient fade -->
         <div class="sticky bottom-0 h-4 bg-gradient-to-t from-gray-50 dark:from-gray-900 to-transparent pointer-events-none z-10"></div>
       </div>
 
-      <!-- Bottom Navigation (Only show if logged in) -->
-      <div v-if="authStore.isAuthenticated" class="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex justify-around p-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+      <!-- Bottom Navigation (Only show if logged in AND consent given) -->
+      <div v-if="authStore.isAuthenticated && consentStore.hasConsented === true" class="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex justify-around p-2 text-xs font-medium text-gray-500 dark:text-gray-400">
         <button
             @click="navigate('Home')"
             class="flex flex-col items-center gap-1 hover:text-orange-500 dark:hover:text-orange-400 transition-all duration-200 py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 relative"
@@ -139,6 +141,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { useConsentStore } from '@/stores/consent';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { useDraggable } from '@/composables/useDraggable';
 
@@ -147,8 +150,10 @@ import Login from '@/components/Login.vue';
 import Home from '@/components/Home.vue';
 import Analytics from '@/components/Analytics.vue';
 import Preferences from '@/components/Preferences.vue';
+import ConsentModal from '@/components/ConsentModal.vue';
 
 const authStore = useAuthStore();
+const consentStore = useConsentStore();
 const { isDark, toggleDarkMode } = useDarkMode();
 const { position, isDragging, startDrag } = useDraggable();
 
@@ -186,12 +191,12 @@ function openDatalyzWebsite() {
 
 // Lifecycle for Auth & Events
 onMounted(async () => {
+  // Consent must be loaded first — the modal gate depends on it
+  await consentStore.initConsent();
   await authStore.initAuth();
 
   // Listen for toggle events from content script
   window.addEventListener('datalyz:toggle', toggleOverlay);
-
-  console.log('✅ OverlayApp mounted and listening for toggle events');
 });
 
 onUnmounted(() => {

@@ -10,15 +10,20 @@ class BatchQueueManager {
     private readonly BATCH_SIZE = 50;
     private readonly BATCH_INTERVAL = 5 * 60 * 1000; // 5 minutes
     private readonly MAX_RETRIES = 5;
-    private readonly BATCH_AGE_THRESHOLD = 10 * 60 * 1000; // 10 minutes
+    private readonly BATCH_AGE_THRESHOLD = 10 * 60 * 1000;  // 10 minutes
+    private readonly SESSION_IDLE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
     private currentBatch: AdData[] = [];
     private sessionId: string;
+    private sessionStartTime: number;
+    private lastActivityTime: number;
     private syncTimer: number | null = null;
     private isOnline: boolean = typeof navigator !== 'undefined' ? navigator.onLine : true;
 
     constructor() {
         this.sessionId = this.generateSessionId();
+        this.sessionStartTime = Date.now();
+        this.lastActivityTime = Date.now();
         this.initDB();
         this.setupNetworkListeners();
         this.startSyncTimer();
@@ -90,6 +95,20 @@ class BatchQueueManager {
     }
 
     async addData(adData: AdData): Promise<void> {
+        const now = Date.now();
+
+        // Session boundary: idle for longer than SESSION_IDLE_TIMEOUT → new session
+        if (now - this.lastActivityTime > this.SESSION_IDLE_TIMEOUT) {
+            if (DEBUG) console.log('Session idle timeout — starting new session');
+            // Flush the current batch under the old session before rotating
+            if (this.currentBatch.length > 0) {
+                await this.flushBatch();
+            }
+            this.sessionId = this.generateSessionId();
+            this.sessionStartTime = now;
+        }
+        this.lastActivityTime = now;
+
         // Deduplicate within current batch
         const fingerprint = `${adData.network}-${adData.domain}-${adData.adType}`;
         const isDuplicate = this.currentBatch.some(
@@ -129,6 +148,8 @@ class BatchQueueManager {
         const payload: BatchPayload = {
             batchId: this.generateBatchId(),
             sessionId: this.sessionId,
+            sessionStartTime: this.sessionStartTime,
+            sessionDuration: Date.now() - this.sessionStartTime,
             timestamp: Date.now(),
             userAgent,
             extensionVersion: manifest.version,
