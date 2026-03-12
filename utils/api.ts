@@ -38,7 +38,6 @@ const apiHandler = {
             const client = axios.create({
                 baseURL: API_ENDPOINT,
                 timeout: 10000,
-                withCredentials: true, // Be careful with this in extensions, often not needed for JWT
             });
             return client.request({ ...config, headers });
         }

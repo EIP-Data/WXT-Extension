@@ -3,16 +3,19 @@ import { categorizeAdType } from "@/utils/adCategories";
 import { analyzeTracker, extractTargetingParams } from "@/utils/trackerAnalyzer";
 import { batchQueue } from "@/utils/batchQueue";
 import type { AdData, BatchPayload } from "@/types/types";
+import { detectNetworkFromUrl } from "@/utils/networkDetector";
 import apiHandler from "@/utils/api";
 import axios from 'axios';
 
+const DEBUG = import.meta.env.DEV ?? false;
+
 export default defineBackground(() => {
     let isTrackingEnabled = true;
-    console.log('Background script initializing...');
+    if (DEBUG) console.log('Background script initializing...');
 
     // 1. Initialize EasyList
     easyListManager.initialize().then(() => {
-        console.log('EasyList ready');
+        if (DEBUG) console.log('EasyList ready');
     });
 
     // 2. Load initial state
@@ -33,32 +36,6 @@ export default defineBackground(() => {
         return 'Unknown';
     }
 
-    function detectNetworkFromUrl(url: string): string {
-        try {
-            const urlObj = new URL(url);
-            const domain = urlObj.hostname.toLowerCase();
-
-            // Direct domain matching
-            if (domain.includes('doubleclick')) return 'Google DoubleClick';
-            if (domain.includes('googlesyndication')) return 'Google Ads';
-            if (domain.includes('googleadservices')) return 'Google Ads';
-            if (domain.includes('facebook')) return 'Facebook Ads';
-            if (domain.includes('amazon-adsystem')) return 'Amazon Ads';
-            if (domain.includes('taboola')) return 'Taboola';
-            if (domain.includes('outbrain')) return 'Outbrain';
-            if (domain.includes('criteo')) return 'Criteo';
-            if (domain.includes('adnxs') || domain.includes('appnexus')) return 'AppNexus/Xandr';
-            if (domain.includes('adsrvr')) return 'The Trade Desk';
-            if (domain.includes('rubiconproject') || domain.includes('rfihub')) return 'Rubicon/Magnite';
-            if (domain.includes('pubmatic')) return 'PubMatic';
-            if (domain.includes('openx')) return 'OpenX';
-            if (domain.includes('casalemedia') || domain.includes('indexexchange')) return 'Index Exchange';
-
-            return 'Unknown Network';
-        } catch {
-            return 'Unknown Network';
-        }
-    }
 
     // 4. Store ad data in batch queue instead of directly
     async function storeAdData(adData: AdData) {
@@ -73,7 +50,7 @@ export default defineBackground(() => {
         const trimmed = existingAds.slice(-500);
         await browser.storage.local.set({ adsAnalytics: trimmed });
 
-        console.log('Ad queued:', adData.network, '-', adData.adType);
+        if (DEBUG) console.log('Ad queued:', adData.network, '-', adData.adType);
 
         // Notify UI
         try {

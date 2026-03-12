@@ -33,10 +33,16 @@ export interface AdData {
     targeting?: TargetingData;
     tracker?: TrackerData;
     metadata?: {
+        // Network-detection fields (background.ts / webRequest)
         method?: string;
         type?: string;
         initiator?: string;
         requestType?: string;
+        // DOM-detection fields (content.ts)
+        selector?: string;
+        className?: string;
+        id?: string;
+        fingerprint?: string;
     };
 }
 
