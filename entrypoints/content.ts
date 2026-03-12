@@ -5,6 +5,9 @@ export default defineContentScript({
         let isTrackingEnabled = true;
         let eventListenersActive = false;
         const detectedAds: any[] = [];
+        const detectedFingerprints = new Set<string>();
+        let observer: MutationObserver | null = null;
+        let intervalId: ReturnType<typeof setInterval> | null = null;
 
         console.log('Content script initialized on:', window.location.href);
 
@@ -58,6 +61,10 @@ export default defineContentScript({
             adSelectors.forEach(selector => {
                 const elements = document.querySelectorAll(selector);
                 elements.forEach(el => {
+                    const fingerprint = `${selector}|${el.className.toString().trim()}|${el.id}|${window.location.hostname}`;
+
+                    if (detectedFingerprints.has(fingerprint)) return;
+
                     const adData = {
                         type: 'ad_detected',
                         adType: classifyAdElement(el),
@@ -69,18 +76,17 @@ export default defineContentScript({
                         metadata: {
                             selector: selector,
                             className: el.className,
-                            id: el.id
+                            id: el.id,
+                            fingerprint: fingerprint,
                         }
                     };
 
-                    // Avoid duplicates
-                    const isDuplicate = detectedAds.some(ad =>
-                        ad.metadata.className === adData.metadata.className &&
-                        ad.metadata.id === adData.metadata.id
-                    );
+                    detectedFingerprints.add(fingerprint);
+                    detectedAds.push(adData);
 
-                    if (!isDuplicate) {
-                        detectedAds.push(adData);
+                    // Cap array to avoid unbounded growth on long-lived SPAs
+                    if (detectedAds.length > 200) {
+                        detectedAds.splice(0, 100);
                     }
                 });
             });
@@ -128,10 +134,10 @@ export default defineContentScript({
             detectAdsInDOM();
 
             // Periodically scan for new ads
-            setInterval(detectAdsInDOM, 5000);
+            intervalId = setInterval(detectAdsInDOM, 5000);
 
             // Observe DOM changes for dynamically loaded ads
-            const observer = new MutationObserver(() => {
+            observer = new MutationObserver(() => {
                 detectAdsInDOM();
             });
 
@@ -145,6 +151,14 @@ export default defineContentScript({
         }
 
         function stopTracking() {
+            observer?.disconnect();
+            observer = null;
+            if (intervalId !== null) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            detectedAds.splice(0);
+            detectedFingerprints.clear();
             eventListenersActive = false;
             console.log('🛑 Ad tracking stopped');
         }

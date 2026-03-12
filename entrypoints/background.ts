@@ -2,7 +2,7 @@ import { easyListManager } from "@/utils/easyListParser";
 import { categorizeAdType } from "@/utils/adCategories";
 import { analyzeTracker, extractTargetingParams } from "@/utils/trackerAnalyzer";
 import { batchQueue } from "@/utils/batchQueue";
-import type { AdData, BatchPayload } from "@/utils/types";
+import type { AdData, BatchPayload } from "@/types/types";
 import apiHandler from "@/utils/api";
 import axios from 'axios';
 
