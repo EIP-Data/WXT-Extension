@@ -89,5 +89,27 @@
   },
   "logout": {
     "SuccessMessage": "Vous avez été déconnecté avec succès"
+  },
+  "consent": {
+    "title": "Consentement aux Données de Recherche",
+    "subtitle": "Requis par le RGPD avant toute collecte de données",
+    "purposeTitle": "Objectif",
+    "purposeBody": "Datalyz collecte des données sur les publicités que vous rencontrez lors de votre navigation pour soutenir",
+    "purposeBodyBold": "la recherche académique sur l'hyperpersonnalisation dans la publicité en ligne",
+    "purposeBodySuffix": "menée par EIP-Data. Vos données ne seront utilisées qu'à des fins de recherche.",
+    "collectTitle": "Ce que nous collectons",
+    "collectAds": "Noms des réseaux publicitaires, types de publicités et catégories de traceurs",
+    "collectPage": "Contexte de la page — catégorie du site, titre de la page, langue du contenu",
+    "collectSession": "Métadonnées de session et horodatages",
+    "collectNotPrefix": "Nous ne collectons",
+    "collectNotBold": "pas",
+    "collectNotSuffix": "les mots de passe, données de formulaire, messages privés ni l'historique de navigation en dehors des publicités.",
+    "withdraw": "Vous pouvez retirer votre consentement à tout moment dans",
+    "withdrawBold": "Paramètres → Révoquer le consentement",
+    "privacyIntro": "Lisez notre",
+    "privacyLinkText": "Politique de Confidentialité",
+    "decline": "Refuser",
+    "accept": "Accepter",
+    "saving": "Enregistrement…"
   }
 }
