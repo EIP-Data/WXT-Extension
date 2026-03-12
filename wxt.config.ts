@@ -37,6 +37,14 @@ export default defineConfig({
       },
     },
 
+    // Required for Firefox overlay to work properly
+    browser_specific_settings: {
+      gecko: {
+        id: 'eip-overlay@wxt-dev',
+        strict_min_version: '109.0',
+      },
+    },
+
     permissions: ['scripting', 'activeTab', 'storage', 'tabs', 'webRequest', 'notifications'],
     host_permissions: ['<all_urls>'],
   },
