@@ -21,6 +21,14 @@ export interface TrackerData {
     vendor?: string;
 }
 
+export interface PageContext {
+    pageCategory?: string;    // inferred from hostname lookup table
+    pageTitle?: string;       // document.title
+    contentLanguage?: string; // html[lang] attribute
+    isSearchPage?: boolean;   // URL contains a recognised search param
+    isSocialFeed?: boolean;   // known social feed domain
+}
+
 export interface AdData {
     type: 'ad_detected';
     adType: string;
@@ -32,6 +40,7 @@ export interface AdData {
     filter?: string;
     targeting?: TargetingData;
     tracker?: TrackerData;
+    pageContext?: PageContext;
     metadata?: {
         // Network-detection fields (background.ts / webRequest)
         method?: string;
@@ -49,6 +58,8 @@ export interface AdData {
 export interface BatchPayload {
     batchId: string;
     sessionId: string;
+    sessionStartTime: number;
+    sessionDuration: number;  // ms since session start, computed at flush time
     timestamp: number;
     userAgent: string;
     extensionVersion: string;
