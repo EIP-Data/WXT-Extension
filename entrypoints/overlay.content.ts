@@ -19,13 +19,13 @@ export default defineContentScript({
     async main(ctx) {
         await loadUserLanguage();
 
-        const ui = await createShadowRootUi(ctx, {
+        const ui = await createShadowRootUi(ctx, ({
             name: 'datalyz-overlay',
             position: 'inline',
             anchor: 'body',
             zIndex: 2147483647,
 
-            onMount: (container) => {
+            onMount: (container: Element) => {
                 // ✅ Add dark mode support to shadow root
                 const shadowHost = container.parentElement;
                 if (shadowHost) {
@@ -63,10 +63,11 @@ export default defineContentScript({
                 return app;
             },
 
-            onRemove: (app) => {
+            onRemove: (app: any) => {
                 app?.unmount();
             },
-        });
+
+        } as any));
 
         uiInstance = ui;
         ui.mount();

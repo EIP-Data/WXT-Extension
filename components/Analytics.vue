@@ -18,7 +18,7 @@ const topNetworks = computed(() => {
   return Object.entries(stats.value.byNetwork)
       .sort((a: any, b: any) => b[1] - a[1])
       .slice(0, 10)
-      .map(([network, count]) => ({ network, count }));
+      .map(([network, count]) => ({ network, count: count as number }))
 });
 
 const topAdTypes = computed(() => {
@@ -26,7 +26,7 @@ const topAdTypes = computed(() => {
   return Object.entries(stats.value.byType)
       .sort((a: any, b: any) => b[1] - a[1])
       .slice(0, 10)
-      .map(([type, count]) => ({ type, count }));
+      .map(([type, count]) => ({ type, count: count as number }))
 });
 
 const topPublishers = computed(() => {
@@ -34,7 +34,7 @@ const topPublishers = computed(() => {
   return Object.entries(stats.value.byPublisher)
       .sort((a: any, b: any) => b[1] - a[1])
       .slice(0, 10)
-      .map(([publisher, count]) => ({ publisher, count }));
+      .map(([publisher, count]) => ({ publisher, count: count as number }))
 });
 
 // Declare loadAdsData BEFORE onMounted so it can be called

@@ -1,4 +1,5 @@
 import { createI18n } from 'vue-i18n';
+import type { Ref } from 'vue';
 import type schema from '@/assets/locales/en.json';
 import { storage } from '#imports';
 import messages from '@intlify/unplugin-vue-i18n/messages';
@@ -22,7 +23,8 @@ export async function loadUserLanguage() {
     const userLocale = savedLang || browser.i18n.getUILanguage().slice(0, 2);
 
     // Update the global locale
-    if (i18n.global.locale.value !== userLocale) {
-        i18n.global.locale.value = userLocale as I18nLocales;
+    const locale = i18n.global.locale as unknown as Ref<string>;
+    if (locale.value !== userLocale) {
+        locale.value = userLocale;
     }
 }

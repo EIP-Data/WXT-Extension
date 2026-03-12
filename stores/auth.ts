@@ -1,6 +1,6 @@
 // stores/auth.ts
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, type Ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import apiHandler from "@/utils/api"
 import { UserPreferences } from "@/types/types";
@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         const lang = await storage.getItem<string>('local:user-lang');
         if (lang) {
-            i18n.global.locale.value = lang;
+            (i18n.global.locale as unknown as Ref<string>).value = lang;
         }
     };
 
@@ -39,10 +39,10 @@ export const useAuthStore = defineStore('auth', () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            preferences.value = response.preferences;
+            preferences.value = response.data.preferences;
 
             await storage.setItem('local:user-lang', preferences.value.language);
-            i18n.global.locale.value = preferences.value.language;
+            (i18n.global.locale as unknown as Ref<string>).value = preferences.value.language;
         } catch (error) {
             console.error('Failed to load preferences:', error);
         }

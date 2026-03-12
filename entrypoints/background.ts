@@ -233,7 +233,8 @@ export default defineBackground(() => {
             (details) => {
                 if (!isTrackingEnabled) return;
 
-                const sourceUrl = details.initiator || details.documentUrl || '';
+                const d = details as any;
+                const sourceUrl = d.initiator || details.documentUrl || '';
                 const isAd = easyListManager.isAdRequest(details.url, sourceUrl, details.type);
 
                 if (isAd) {
@@ -258,7 +259,7 @@ export default defineBackground(() => {
                         metadata: {
                             method: details.method,
                             type: details.type,
-                            initiator: details.initiator,
+                            initiator: d.initiator,
                             requestType: details.type
                         }
                     };
