@@ -1,4 +1,7 @@
 import { FiltersEngine, Request } from '@cliqz/adblocker';
+import { detectNetworkFromUrl } from '@/utils/networkDetector';
+
+const DEBUG = import.meta.env.DEV ?? false;
 
 export class EasyListManager {
     private engine: FiltersEngine | null = null;
@@ -11,7 +14,7 @@ export class EasyListManager {
     ];
 
     async initialize() {
-        console.log('Initializing EasyList engine...');
+        if (DEBUG) console.log('Initializing EasyList engine...');
 
         try {
             const stored = await this.getStoredEngine();
@@ -23,12 +26,12 @@ export class EasyListManager {
                     // Use cached version
                     this.engine = FiltersEngine.deserialize(new Uint8Array(stored.engine));
                     this.lastUpdate = stored.timestamp;
-                    console.log('Loaded EasyList from cache');
+                    if (DEBUG) console.log('Loaded EasyList from cache');
                     return;
                 }
             }
         } catch (e) {
-            console.log('No cached EasyList found, downloading...');
+            if (DEBUG) console.log('No cached EasyList found, downloading...');
         }
 
         // Download fresh lists
@@ -36,7 +39,7 @@ export class EasyListManager {
     }
 
     async updateFilters() {
-        console.log('Downloading EasyList filters...');
+        if (DEBUG) console.log('Downloading EasyList filters...');
 
         try {
             const responses = await Promise.all(
@@ -64,7 +67,7 @@ export class EasyListManager {
             const arrayData = Array.from(serialized);
             await this.storeEngine(arrayData, this.lastUpdate);
 
-            console.log('EasyList filters updated successfully');
+            if (DEBUG) console.log('EasyList filters updated successfully');
         } catch (error) {
             console.error('Failed to update EasyList:', error);
             throw error;
@@ -180,7 +183,7 @@ export class EasyListManager {
 
     extractAdNetwork(filter: string, url: string): string {
         // First check URL domain
-        const urlNetwork = this.detectNetworkFromUrl(url);
+        const urlNetwork = detectNetworkFromUrl(url);
         if (urlNetwork !== 'Unknown Network') return urlNetwork;
 
         // Then check filter patterns
@@ -215,32 +218,6 @@ export class EasyListManager {
         }
 
         return 'Unknown Network';
-    }
-
-    private detectNetworkFromUrl(url: string): string {
-        try {
-            const urlObj = new URL(url);
-            const domain = urlObj.hostname.toLowerCase();
-
-            if (domain.includes('doubleclick')) return 'Google DoubleClick';
-            if (domain.includes('googlesyndication')) return 'Google Ads';
-            if (domain.includes('googleadservices')) return 'Google Ads';
-            if (domain.includes('facebook')) return 'Facebook Ads';
-            if (domain.includes('amazon-adsystem')) return 'Amazon Ads';
-            if (domain.includes('taboola')) return 'Taboola';
-            if (domain.includes('outbrain')) return 'Outbrain';
-            if (domain.includes('criteo')) return 'Criteo';
-            if (domain.includes('adnxs')) return 'AppNexus/Xandr';
-            if (domain.includes('adsrvr')) return 'The Trade Desk';
-            if (domain.includes('rubiconproject')) return 'Rubicon/Magnite';
-            if (domain.includes('pubmatic')) return 'PubMatic';
-            if (domain.includes('openx')) return 'OpenX';
-            if (domain.includes('indexexchange') || domain.includes('casalemedia')) return 'Index Exchange';
-
-            return 'Unknown Network';
-        } catch {
-            return 'Unknown Network';
-        }
     }
 
     categorizeAdFromFilter(filter: string, url: string): string {
