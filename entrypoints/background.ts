@@ -151,10 +151,22 @@ export default defineBackground(() => {
                     }
 
                     case 'TOGGLE_TRACKING': {
-                        // Consent is required to enable tracking; disabling is always allowed
+                        // If they enable tracking, implicitly set userConsent = true
                         const consentResult = await browser.storage.local.get(['userConsent']);
-                        const hasConsented = consentResult.userConsent?.hasConsented === true;
-                        isTrackingEnabled = message.data.enabled === true && hasConsented;
+                        let currentConsent = consentResult.userConsent;
+
+                        if (message.data.enabled === true) {
+                            if (!currentConsent) currentConsent = { consentVersion: '1.0' };
+                            currentConsent.hasConsented = true;
+                            currentConsent.consentTimestamp = Date.now();
+                            await browser.storage.local.set({ userConsent: currentConsent });
+                        } else if (message.data.enabled === false && currentConsent) {
+                            currentConsent.hasConsented = false;
+                            currentConsent.consentTimestamp = Date.now();
+                            await browser.storage.local.set({ userConsent: currentConsent });
+                        }
+
+                        isTrackingEnabled = message.data.enabled === true;
                         await browser.storage.local.set({ trackingEnabled: isTrackingEnabled });
 
                         // Notify all content scripts of the new state
