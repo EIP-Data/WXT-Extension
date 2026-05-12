@@ -70,9 +70,9 @@
     "elementLabel": "Élément"
   },
   "analytics": {
-    "title": "Tableau de Bord Publicitaire",
-    "subtitle": "Suivez et analysez les publicités ciblées",
-    "clearAll": "Effacer Toutes les Données",
+    "title": "Tableau de Bord",
+    "subtitle": "Surveillez votre exposition aux annonces et tentatives de suivi",
+    "clearAll": "Tout Effacer",
     "totalAds": "Publicités Détectées",
     "networks": "Réseaux Publicitaires",
     "adTypes": "Types de Publicités",
@@ -82,10 +82,12 @@
     "recentAds": "Publicités Récemment Détectées",
     "publisher": "Éditeur",
     "ads": "publicités",
-    "noData": "Aucune publicité détectée pour le moment",
-    "loadError": "Échec du chargement des analyses",
+    "noData": "Aucune donnée de suivi publicitaire collectée.",
+    "loadError": "Échec du chargement des données analytiques",
+    "cleared": "Données analytiques effacées avec succès",
     "clearError": "Échec de l'effacement des données",
-    "cleared": "Données analytiques effacées"
+    "iabRegisteredVendor": "Vendeur enregistré à l'IAB",
+    "dataPurposes": "Finalités des données"
   },
   "logout": {
     "SuccessMessage": "Vous avez été déconnecté avec succès"
