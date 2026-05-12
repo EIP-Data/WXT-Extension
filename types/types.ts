@@ -30,29 +30,25 @@ export interface PageContext {
 }
 
 export interface AdData {
-    type: 'ad_detected';
-    adType: string;
-    publisher: string;
-    network: string;
-    url: string;
+    id?: string;
     domain: string;
-    timestamp: number;
+    url: string;
+    network: string;
+    adType: 'banner' | 'tracking' | 'video' | 'popup' | 'unknown' | string;
+    type?: string;
+    publisher?: string;
     filter?: string;
     targeting?: TargetingData;
     tracker?: TrackerData;
+    metadata?: Record<string, any>;
     pageContext?: PageContext;
-    metadata?: {
-        // Network-detection fields (background.ts / webRequest)
-        method?: string;
-        type?: string;
-        initiator?: string;
-        requestType?: string;
-        // DOM-detection fields (content.ts)
-        selector?: string;
-        className?: string;
-        id?: string;
-        fingerprint?: string;
-    };
+    timestamp: number;
+    category?: string;
+    purpose?: string;
+    privacyRisk?: 'low' | 'medium' | 'high';
+    iabVendorId?: number;
+    iabPurposes?: string[];
+    isIabRegistered?: boolean;
 }
 
 export interface BatchPayload {
@@ -73,3 +69,19 @@ export interface QueueItem {
     lastAttempt?: number;
     createdAt: number;
 }
+
+export type ExtensionMessageAction =
+    | 'AD_DETECTED'
+    | 'REPORT_ADS'
+    | 'GET_ADS_ANALYTICS'
+    | 'TOGGLE_TRACKING'
+    | 'GET_TRACKING_STATE'
+    | 'CLEAR_ADS_ANALYTICS'
+    | 'FORCE_SYNC'
+    | 'GET_QUEUE_STATS'
+    | 'SEND_BATCH_TO_BACKEND'
+    | 'UPDATE_EASYLIST'
+    | 'AD_STORED_UPDATE'
+    | 'TOGGLE_OVERLAY'
+    | 'API_PROXY_REQUEST'
+    | 'DEBUG_DUMP_QUEUE';

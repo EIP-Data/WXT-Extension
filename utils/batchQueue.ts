@@ -342,6 +342,27 @@ class BatchQueueManager {
         });
     }
 
+    async getDebugQueue(): Promise<AdData[]> {
+        if (!this.db) return [];
+
+        return new Promise((resolve, reject) => {
+            // Strictly read-only transaction
+            const transaction = this.db!.transaction([this.STORE_NAME], 'readonly');
+            const store = transaction.objectStore(this.STORE_NAME);
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                const items = request.result as QueueItem[];
+                // Flatten all pending batches into a single array of AdData
+                const allAds = items.flatMap(item => item.payload.data);
+                // Also optionally append any current un-flushed items held in memory
+                const combined = [...allAds, ...this.currentBatch];
+                resolve(combined);
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
+
     destroy(): void {
         if (this.syncTimer) {
             clearInterval(this.syncTimer);

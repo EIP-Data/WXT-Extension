@@ -2,8 +2,9 @@ import { easyListManager } from "@/utils/easyListParser";
 import { categorizeAdType } from "@/utils/adCategories";
 import { analyzeTracker, extractTargetingParams } from "@/utils/trackerAnalyzer";
 import { batchQueue } from "@/utils/batchQueue";
-import type { AdData, BatchPayload } from "@/types/types";
+import type { AdData } from "@/types/types";
 import { detectNetworkFromUrl } from "@/utils/networkDetector";
+import { gvlService } from "@/utils/gvlService";
 import apiHandler from "@/utils/api";
 import axios from 'axios';
 
@@ -16,6 +17,11 @@ export default defineBackground(() => {
     // 1. Initialize EasyList
     easyListManager.initialize().then(() => {
         if (DEBUG) console.log('EasyList ready');
+    });
+    
+    // 1b. Initialize GVL
+    gvlService.init().then(() => {
+        if (DEBUG) console.log('GVL ready');
     });
 
     // 2. Load initial state — consent MUST be verified before enabling tracking
@@ -40,6 +46,16 @@ export default defineBackground(() => {
 
     // 4. Store ad data in batch queue instead of directly
     async function storeAdData(adData: AdData) {
+        // Cross-reference with IAB GVL
+        if (adData.domain) {
+            const gvlMeta = gvlService.getVendorMetadata(adData.domain);
+            if (gvlMeta) {
+                adData.iabVendorId = gvlMeta.iabVendorId;
+                adData.iabPurposes = gvlMeta.iabPurposes;
+                adData.isIabRegistered = gvlMeta.isIabRegistered;
+            }
+        }
+
         await batchQueue.addData(adData);
 
         // Still store locally for real-time UI display
@@ -77,7 +93,10 @@ export default defineBackground(() => {
         ads.forEach(ad => {
             stats.byNetwork[ad.network] = (stats.byNetwork[ad.network] || 0) + 1;
             stats.byType[ad.adType] = (stats.byType[ad.adType] || 0) + 1;
-            stats.byPublisher[ad.publisher] = (stats.byPublisher[ad.publisher] || 0) + 1;
+
+            const publisher = ad.publisher || 'Unknown';
+            stats.byPublisher[publisher] = (stats.byPublisher[publisher] || 0) + 1;
+
             if (ad.tracker) {
                 const key = `${ad.tracker.category} (${ad.tracker.vendor || 'Unknown'})`;
                 stats.byTracker[key] = (stats.byTracker[key] || 0) + 1;
@@ -198,14 +217,13 @@ export default defineBackground(() => {
 
                     case 'FORCE_SYNC': {
                         await batchQueue.flushBatch();
-                        await batchQueue.processQueue();
                         sendResponse({ success: true });
                         break;
                     }
 
-                    case 'GET_QUEUE_STATS': {
-                        const queueStats = await batchQueue.getQueueStats();
-                        sendResponse({ success: true, stats: queueStats });
+                    case 'GET_DEBUG_QUEUE': {
+                        const queueData = await batchQueue.getDebugQueue();
+                        sendResponse({ success: true, data: queueData });
                         break;
                     }
 
