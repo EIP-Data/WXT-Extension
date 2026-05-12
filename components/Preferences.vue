@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import useI18n from '@/composables/useI18n'
 import api from "@/utils/api";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toast-notification";
@@ -8,7 +8,11 @@ import Dropdown from "@/components/Dropdown.vue";
 import { UserPreferences } from "@/types/types";
 
 const toast = useToast();
-const preferences = ref({} as UserPreferences);
+const preferences = ref<UserPreferences>({
+  cookie: false,
+  language: 'en',
+  data_expiration: 30
+} as UserPreferences);
 const { t, locale } = useI18n();
 
 // Tracking state
@@ -23,6 +27,7 @@ const localeOptions = [
 
 const switchLanguage = async (lang: 'en' | 'fr') => {
   locale.value = lang
+  preferences.value.language = lang
   await storage.setItem('local:user-lang', lang)
   localStorage.setItem('user-lang', lang)
 }
@@ -30,7 +35,15 @@ const switchLanguage = async (lang: 'en' | 'fr') => {
 const getPreference = async () => {
   try {
     const response = await api.get('/preferences');
-    preferences.value = response.data.preferences;
+    if (response.data && response.data.preferences) {
+      preferences.value = {
+        ...preferences.value,
+        ...response.data.preferences
+      };
+      if (preferences.value.language) {
+        locale.value = preferences.value.language as "en" | "fr";
+      }
+    }
   } catch (error) {
     toast.error(t('preference.loadError'));
   }

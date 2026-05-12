@@ -70,8 +70,8 @@
     "elementLabel": "Element"
   },
   "analytics": {
-    "title": "Ad Analytics Dashboard",
-    "subtitle": "Track and analyze targeted advertisements",
+    "title": "Analytics Dashboard",
+    "subtitle": "Monitor your ad exposure and tracking attempts",
     "clearAll": "Clear All Data",
     "totalAds": "Total Ads Detected",
     "networks": "Ad Networks",
@@ -82,10 +82,12 @@
     "recentAds": "Recently Detected Ads",
     "publisher": "Publisher",
     "ads": "ads",
-    "noData": "No ads detected yet",
-    "loadError": "Failed to load analytics",
-    "clearError": "Failed to clear data",
-    "cleared": "Analytics data cleared"
+    "noData": "No ad tracking data collected yet.",
+    "loadError": "Failed to load analytics data",
+    "cleared": "Analytics data cleared successfully",
+    "clearError": "Failed to clear analytics data",
+    "iabRegisteredVendor": "IAB Registered Vendor",
+    "dataPurposes": "Data Purposes"
   },
   "logout": {
     "SuccessMessage": "You have been logged out successfully"

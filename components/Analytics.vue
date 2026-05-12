@@ -77,6 +77,27 @@ const forceSync = async () => {
   }
 };
 
+const downloadJSON = async () => {
+  try {
+    const response = await browser.runtime.sendMessage({ action: 'GET_DEBUG_QUEUE' });
+    if (response && response.success) {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(response.data, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "datalyz_batch_dump.json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      toast.success(t('analytics.downloadSuccess') || 'JSON Downloaded');
+    } else {
+      toast.error(t('analytics.downloadError') || 'Failed to download JSON');
+    }
+  } catch (error) {
+    console.error('Failed to download JSON payload:', error);
+    toast.error(t('analytics.downloadError') || 'Failed to download JSON');
+  }
+};
+
 const formatTimestamp = (timestamp: number) => {
   return new Date(timestamp).toLocaleString();
 };
@@ -129,12 +150,20 @@ onMounted(async () => {
               {{ t('analytics.subtitle') }}
             </p>
           </div>
-          <button
-              @click="clearAdsData"
-              class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all font-medium shadow-md"
-          >
-            {{ t('analytics.clearAll') }}
-          </button>
+          <div class="flex gap-2">
+            <button
+                @click="downloadJSON"
+                class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all font-medium shadow-md"
+            >
+              Download JSON
+            </button>
+            <button
+                @click="clearAdsData"
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all font-medium shadow-md"
+            >
+              {{ t('analytics.clearAll') }}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -278,6 +307,12 @@ onMounted(async () => {
             <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
               {{ ad.domain }}
             </p>
+            <div v-if="ad.isIabRegistered" class="mt-2 text-xs bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-blue-800 dark:text-blue-300">
+              <span class="font-bold">🏷️ {{ t('analytics.iabRegisteredVendor') }} (ID: {{ ad.iabVendorId }})</span>
+              <p class="mt-1" v-if="ad.iabPurposes && ad.iabPurposes.length">
+                <span class="font-semibold">{{ t('analytics.dataPurposes') }}:</span> {{ ad.iabPurposes.join(', ') }}
+              </p>
+            </div>
           </div>
 
           <div v-if="adsData.length === 0" class="text-center py-12">
