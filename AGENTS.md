@@ -40,9 +40,14 @@ All cross-context communication uses `browser.runtime.sendMessage` with an `acti
 
 ## Data Pipeline
 1. Network-level: `webRequest.onBeforeRequest` + `@cliqz/adblocker` `FiltersEngine` (EasyList + EasyPrivacy, cached 24h in `browser.storage.local`).
-2. DOM-level: `content.ts` queries ad selectors → sends `REPORT_ADS` to background.
+2. DOM-level: `content.ts` queries ad selectors → sends `REPORT_ADS` to background. Page context (category) is extracted via `utils/pageContextExtractor.ts`. Trackers and fingerprinting are analyzed via `utils/trackerAnalyzer.ts`. IAB vendors are mapped using `utils/gvlService.ts`.
 3. Background stores up to 500 recent `AdData` in `browser.storage.local['adsAnalytics']` (for real-time UI).
 4. Background also enqueues into `batchQueue` (`utils/batchQueue.ts`) — IndexedDB-backed, batches of 50, flushes every 5 min → `POST /analytics/batch`.
+
+## Privacy & Consent (GDPR)
+Data collection is strict opt-in. The `consentStore` (`stores/consent.ts`) manages this state.
+- `ConsentModal.vue` gates the main UI inside `OverlayApp.vue` (`hasConsented === null`).
+- On exact opt-out or erasure request (`requestErasure`), the store fires `TOGGLE_TRACKING` and `CLEAR_ADS_ANALYTICS` to the background to wipe immediate data, and requests server deletion via `apiHandler.delete('/user/data')`.
 
 ## WXT Auto-Imports
 WXT globally injects: `defineBackground`, `defineContentScript`, `createShadowRootUi`, `browser`. **Do not import these.** Use `import { storage } from '#imports'` for WXT's storage abstraction (`local:` prefix for `browser.storage.local`).
@@ -60,9 +65,8 @@ The overlay lives inside a Shadow DOM, so Tailwind dark mode (`darkMode: 'class'
 - Language is persisted in `local:user-lang` via WXT storage and loaded in `overlay.content.ts` before app mount.
 
 ## Key Conventions
-- **Pinia stores** use composition API style. `initAuth()` must be called on overlay mount (already done in `OverlayApp.vue`).
+- **Pinia stores** use composition API style. `initAuth()` and `initConsent()` must be called on overlay mount (already done in `OverlayApp.vue`).
 - **Path alias `@/`** maps to the project root (not `src/`).
 - **All shared types** live in `types/types.ts` (`AdData`, `BatchPayload`, `TrackerData`, etc.).
 - **Brand color** is orange: `text-orange-500`, custom `orangePrimary` token in `tailwind.config.js`.
 - Overlay position is persisted in `browser.storage.local['overlayPosition']` via `composables/useDraggable.ts`.
-
