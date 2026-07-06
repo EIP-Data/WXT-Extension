@@ -5,6 +5,8 @@ import { batchQueue } from "@/utils/batchQueue";
 import type { AdData } from "@/types/types";
 import { detectNetworkFromUrl } from "@/utils/networkDetector";
 import { gvlService } from "@/utils/gvlService";
+import { atpService } from "@/utils/atpService";
+import { whoTracksMeService } from "@/utils/whoTracksMeService";
 import apiHandler from "@/utils/api";
 import axios from 'axios';
 
@@ -22,6 +24,14 @@ export default defineBackground(() => {
     // 1b. Initialize GVL
     gvlService.init().then(() => {
         if (DEBUG) console.log('GVL ready');
+    });
+
+    // 1c. Initialize ATP & WhoTracksMe
+    atpService.init().then(() => {
+        if (DEBUG) console.log('ATP ready');
+    });
+    whoTracksMeService.init().then(() => {
+        if (DEBUG) console.log('WhoTracksMe ready');
     });
 
     // 2. Load initial state — consent MUST be verified before enabling tracking
@@ -53,6 +63,20 @@ export default defineBackground(() => {
                 adData.iabVendorId = gvlMeta.iabVendorId;
                 adData.iabPurposes = gvlMeta.iabPurposes;
                 adData.isIabRegistered = gvlMeta.isIabRegistered;
+            }
+
+            const atpMeta = atpService.getProviderMetadata(adData.domain);
+            if (atpMeta) {
+                adData.googleAtpId = atpMeta.googleAtpId;
+                adData.isGoogleAtp = atpMeta.isGoogleAtp;
+            }
+
+            const entity = whoTracksMeService.getParentEntity(adData.domain);
+            if (entity) {
+                adData.whoTracksMeEntity = entity;
+                if (adData.tracker) {
+                    adData.tracker.parentCompany = entity;
+                }
             }
         }
 
