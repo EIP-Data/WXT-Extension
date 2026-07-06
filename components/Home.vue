@@ -5,15 +5,23 @@ import { useToast } from 'vue-toast-notification';
 import api from '@/utils/api';
 import { ShieldCheckIcon, PresentationChartBarIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import ProfilingChart from '@/components/Charts/ProfilingChart.vue';
+import Chart from 'primevue/chart';
+import useI18n from '@/composables/useI18n';
+
+interface TrackerStat {
+  type: string;
+  count: number;
+  percentage: number;
+}
 
 const router = useRouter();
 const toast = useToast();
 const user = ref(null);
-const stats = ref({
-  cookiesBlocked: 142,
-  trackersStopped: 89,
-  adsPrevented: 236,
-});
+const stats = ref<any>({});
+const chartData = ref<TrackerStat[]>([]);
+
+const isSettingsDropdownOpen = ref(false);
+
 const { t } = useI18n();
 
 const getUserData = async () => {
@@ -21,12 +29,48 @@ const getUserData = async () => {
     const response = await api.get('/user');
     user.value = response.data.user.username;
   } catch (error) {
-    toast.error('Failed to load user data');
+    console.error('Failed to load user data', error);
+  }
+};
+
+const getRealAnalytics = async () => {
+  try {
+    const response = await browser.runtime.sendMessage({ action: 'GET_ADS_ANALYTICS' });
+    if (response && response.stats) {
+      const realStats = response.stats;
+      stats.value.adsPrevented = realStats.totalAds || 0;
+
+      let totalTrackers = 0;
+      const trackerCategories: Record<string, number> = {};
+
+      if (realStats.byTracker) {
+        for (const [key, count] of Object.entries(realStats.byTracker)) {
+          const category = key.split('(')[0].trim() || 'Unknown';
+          trackerCategories[category] = (trackerCategories[category] || 0) + (count as number);
+          totalTrackers += (count as number);
+        }
+      }
+
+      stats.value.trackersStopped = totalTrackers;
+
+      const trackersList = Object.entries(trackerCategories).map(([type, count]) => ({
+        type,
+        count,
+        percentage: totalTrackers > 0 ? Number(((count / totalTrackers) * 100).toFixed(1)) : 0
+      }));
+
+      chartData.value = trackersList.length > 0 ? trackersList : [
+        { type: 'None detected', count: 0, percentage: 0 }
+      ];
+    }
+  } catch (error) {
+    console.error('Failed to load analytics data', error);
   }
 };
 
 onMounted(() => {
   getUserData();
+  getRealAnalytics();
 });
 </script>
 
@@ -92,12 +136,7 @@ onMounted(() => {
       <ProfilingChart
           chart-type="donut"
           :metrics="{
-          trackers: [
-            { type: 'Analytics', count: 45, percentage: 37.5 },
-            { type: 'Ads', count: 32, percentage: 26.7 },
-            { type: 'Social', count: 28, percentage: 23.3 },
-            { type: 'Other', count: 15, percentage: 12.5 }
-          ],
+          trackers: chartData,
           ads: [],
           locations: []
         }"
@@ -110,12 +149,7 @@ onMounted(() => {
       <ProfilingChart
           chart-type="bar"
           :metrics="{
-          trackers: [
-            { type: 'Analytics', count: 45 },
-            { type: 'Ads', count: 32 },
-            { type: 'Social', count: 28 },
-            { type: 'Other', count: 15 }
-          ],
+          trackers: chartData,
           ads: [],
           locations: []
         }"

@@ -19,6 +19,7 @@ export interface TrackerData {
     privacyRisk: 'low' | 'medium' | 'high';
     crossSite: boolean;
     vendor?: string;
+    parentCompany?: string;
 }
 
 export interface PageContext {
@@ -49,6 +50,9 @@ export interface AdData {
     iabVendorId?: number;
     iabPurposes?: string[];
     isIabRegistered?: boolean;
+    googleAtpId?: number;
+    isGoogleAtp?: boolean;
+    whoTracksMeEntity?: string;
 }
 
 export interface BatchPayload {
